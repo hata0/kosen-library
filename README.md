@@ -1,2 +1,1 @@
 KOSEN LIBRARY
-データセット
