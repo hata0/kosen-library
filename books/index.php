@@ -20,13 +20,13 @@ $articles = [
     [
         'id' => '101',
         'title' => '近代文学の金字塔を今こそ読むべき理由',
-        'excerpt' => '正義感が強すぎる主人公の葛藤と、ユーモア溢れるキャラクターたちの掛け合いが最高です。現代人が読んでも全く色褪せない魅力があります。',
+        'content' => '正義感が強すぎる主人公の葛藤と、ユーモア溢れるキャラクターたちの掛け合いが最高です。現代人が読んでも全く色褪せない魅力があります。\n\n特に印象的なのは、周囲の大人たちのずる賢さに対して、主人公がどこまでも真っ直ぐに、愚直なまでに自分の正義を貫こうとする姿勢です。一見すると不器用で損ばかりしているように見えますが、読み進めるうちにその純粋さに心を打たれます。\n\n文章も非常にテンポが良く、当時の言葉遣いでありながら現代の小説のようにスラスラと読めてしまうのも驚きです。読書が苦手な人にこそ、ぜひ最初のステップとして手に取ってほしい名作です。',
         'date' => '2026/06/20'
     ],
     [
         'id' => '102',
         'title' => 'スマホ世代に勧めたい、テンポの良い名作',
-        'excerpt' => '文章が非常に軽快で、現代のライトノベルのようにサクサク読めることに驚きました。特に教頭との心理戦のシーンはハラハラします。',
+        'content' => '文章が非常に軽快で、現代のライトノベルのようにサクサク読めることに驚きました。特に教頭との心理戦のシーンはハラハラします。',
         'date' => '2026/06/15'
     ]
 ];
@@ -192,7 +192,7 @@ $articles = [
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
         .article-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
-        .article-excerpt {
+        .article-content {
             font-size: 14px; color: var(--md-sys-color-on-surface-variant); line-height: 1.5; margin-bottom: 12px;
             display: -webkit-box; -webkit-box-orient: vertical; -webkit-box-line-clamp: 3; overflow: hidden;
         }
@@ -300,9 +300,9 @@ $articles = [
 
                 <div class="article-list">
                     <?php foreach ($articles as $article): ?>
-                        <a href="../article/index.php?id=<?php echo htmlspecialchars($article['id'], ENT_QUOTES, 'UTF-8'); ?>" class="article-card">
+                        <a href="../articles?id=<?php echo htmlspecialchars($article['id'], ENT_QUOTES, 'UTF-8'); ?>" class="article-card">
                             <h3 class="article-title"><?php echo htmlspecialchars($article['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
-                            <p class="article-excerpt"><?php echo htmlspecialchars($article['excerpt'], ENT_QUOTES, 'UTF-8'); ?></p>
+                            <p class="article-content"><?php echo htmlspecialchars(mb_strimwidth($article['content'], 0, 120, '...', 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?></p>
                             <div class="article-date"><?php echo htmlspecialchars($article['date'], ENT_QUOTES, 'UTF-8'); ?></div>
                         </a>
                     <?php endforeach; ?>
