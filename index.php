@@ -195,7 +195,7 @@
             <div class="app-title">図書室アプリ</div>
             <nav class="app-nav">
                 <a href="#" class="nav-item active">ホーム</a>
-                <a href="#" class="nav-item">マイページ</a>
+                <a href="mypage/" class="nav-item">マイページ</a>
             </nav>
         </div>
     </header>
