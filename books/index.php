@@ -9,7 +9,9 @@ $book = [
     'author' => '夏目漱石',
     'publisher' => '新潮社',
     'year' => '1906年',
-    'ndc' => '913.6' // ★日本十進分類法（913.6 = 日本文学・小説）を追加
+    'ndc' => '913.6',
+    // ★本のカバー画像URLを保持（Unsplashのダミー画像を設定しています）
+    'image_url' => 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=400&q=80'
 ];
 
 // この本に紐づく紹介記事のダミーリスト
@@ -38,8 +40,6 @@ $articles = [
         /* --- 共通デザインシステム（Material Design 3 ベース） --- */
         :root {
             --md-sys-color-primary: #1a73e8;
-            --md-sys-color-primary-container: #e8f0fe;
-            --md-sys-color-on-primary-container: #174ea6;
             --md-sys-color-background: #ffffff;
             --md-sys-color-surface: #ffffff;
             --md-sys-color-surface-variant: #f8f9fa;
@@ -97,45 +97,74 @@ $articles = [
             font-size: 14px;
         }
 
-        /* --- 本の情報セクション --- */
+        /* --- 本の情報セクション（レスポンシブFlexレイアウト） --- */
         .book-info-container {
             border-bottom: 1px solid var(--md-sys-color-outline);
-            padding-bottom: 24px;
+            padding-bottom: 28px;
+            display: flex;
+            flex-direction: column; /* スマホでは縦並び */
+            gap: 24px;
+            align-items: center;
+        }
+
+        /* 本の画像ラッパー */
+        .book-image-wrapper {
+            width: 160px; /* スマホでの最適なサイズ */
+            aspect-ratio: 2 / 3;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            background-color: var(--md-sys-color-surface-variant);
+            flex-shrink: 0;
+        }
+        .book-cover-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 本のテキスト情報エリア */
+        .book-details-wrapper {
+            width: 100%;
         }
         .book-title {
-            font-size: 24px;
+            font-size: 22px;
             font-weight: 700;
             margin-bottom: 16px;
             line-height: 1.3;
+            text-align: center; /* スマホでは中央寄せ */
         }
         .book-meta-list {
             list-style: none;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
         .book-meta-item {
             font-size: 15px;
             color: var(--md-sys-color-on-surface-variant);
             display: flex;
+            border-bottom: 1px dashed rgba(0,0,0,0.05);
+            padding-bottom: 6px;
         }
         .book-meta-label {
-            width: 80px;
+            width: 90px;
             flex-shrink: 0;
             color: #80868b;
+            font-weight: 500;
+        }
+        .book-meta-value {
+            color: var(--md-sys-color-on-surface);
         }
 
-        /* --- セクションヘッダー ＆ 投稿ボタン --- */
+        /* --- 紹介記事セクション --- */
         .section-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
         }
-        .section-title {
-            font-size: 18px;
-            font-weight: 700;
-        }
+        .section-title { font-size: 18px; font-weight: 700; }
         .btn-post {
             display: inline-flex;
             align-items: center;
@@ -148,61 +177,59 @@ $articles = [
             font-weight: 700;
             transition: background-color 0.2s, box-shadow 0.2s;
         }
-        .btn-post:hover {
-            background-color: #1557b0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
-        }
+        .btn-post:hover { background-color: #1557b0; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
 
         /* --- 紹介記事カード --- */
-        .article-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
+        .article-list { display: flex; flex-direction: column; gap: 16px; }
         .article-card {
-            display: block;
-            text-decoration: none;
-            color: inherit;
-            border: 1px solid var(--md-sys-color-outline);
-            border-radius: 16px;
-            padding: 20px;
-            background-color: var(--md-sys-color-surface);
-            transition: border-color 0.2s, background-color 0.2s, box-shadow 0.2s;
+            display: block; text-decoration: none; color: inherit;
+            border: 1px solid var(--md-sys-color-outline); border-radius: 16px; padding: 20px;
+            background-color: var(--md-sys-color-surface); transition: 0.2s;
         }
         .article-card:hover {
-            border-color: transparent;
-            background-color: var(--md-sys-color-surface-variant);
+            border-color: transparent; background-color: var(--md-sys-color-surface-variant);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
-        .article-title {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            line-height: 1.4;
-            color: var(--md-sys-color-on-surface);
-        }
+        .article-title { font-size: 16px; font-weight: 700; margin-bottom: 8px; line-height: 1.4; }
         .article-excerpt {
-            font-size: 14px;
-            color: var(--md-sys-color-on-surface-variant);
-            line-height: 1.5;
-            margin-bottom: 12px;
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-box-line-clamp: 3;
-            overflow: hidden;
+            font-size: 14px; color: var(--md-sys-color-on-surface-variant); line-height: 1.5; margin-bottom: 12px;
+            display: -webkit-box; -webkit-box-orient: vertical; -webkit-box-line-clamp: 3; overflow: hidden;
         }
-        .article-date {
-            font-size: 12px;
-            color: #80868b;
-            text-align: right;
+        .article-date { font-size: 12px; color: #80868b; text-align: right; }
+        .no-image-placeholder {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            color: var(--md-sys-color-on-surface-variant);
+            background-color: var(--md-sys-color-surface-variant);
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
         }
 
-        /* --- タブレット・PC向けレスポンシブ調整 --- */
+        /* ==========================================================================
+           タブレット・PC向けのレスポンシブ調整 (ブレイクポイント: 768px以上)
+           ========================================================================== */
         @media (min-width: 768px) {
             .header-inner { padding: 24px 24px 12px 24px; display: flex; justify-content: space-between; align-items: center; }
             .app-title { margin-bottom: 0; font-size: 24px; }
             .main-content { padding: 40px 24px; gap: 36px; }
-            .book-title { font-size: 28px; }
+            
+            /* 本の情報セクションをきれいな横並び(2カラム)へ変更 */
+            .book-info-container {
+                flex-direction: row;
+                align-items: flex-start;
+                gap: 36px;
+            }
+            .book-image-wrapper {
+                width: 180px; /* 大画面向けに少し拡大 */
+            }
+            .book-title {
+                font-size: 28px;
+                text-align: left; /* 左寄せに戻す */
+            }
             .section-title { font-size: 20px; }
             .article-title { font-size: 18px; }
         }
@@ -225,25 +252,43 @@ $articles = [
 
         <?php if ($book_id !== ''): ?>
             <section class="book-info-container">
-                <h1 class="book-title"><?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?></h1>
-                <ul class="book-meta-list">
-                    <li class="book-meta-item">
-                        <span class="book-meta-label">著者</span>
-                        <span class="book-meta-value"><?php echo htmlspecialchars($book['author'], ENT_QUOTES, 'UTF-8'); ?></span>
-                    </li>
-                    <li class="book-meta-item">
-                        <span class="book-meta-label">出版社</span>
-                        <span class="book-meta-value"><?php echo htmlspecialchars($book['publisher'], ENT_QUOTES, 'UTF-8'); ?></span>
-                    </li>
-                    <li class="book-meta-item">
-                        <span class="book-meta-label">出版年</span>
-                        <span class="book-meta-value"><?php echo htmlspecialchars($book['year'], ENT_QUOTES, 'UTF-8'); ?></span>
-                    </li>
-                    <li class="book-meta-item">
-                        <span class="book-meta-label">NDC</span>
-                        <span class="book-meta-value"><?php echo htmlspecialchars($book['ndc'], ENT_QUOTES, 'UTF-8'); ?></span>
-                    </li>
-                </ul>
+                
+                <div class="book-image-wrapper">
+                    <?php if (!empty($book['image_url'])): ?>
+                        <img src="<?php echo htmlspecialchars($book['image_url'], ENT_QUOTES, 'UTF-8'); ?>" 
+                            alt="<?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?>のカバー画像" 
+                            class="book-cover-image"
+                            onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <?php endif; ?>
+
+                    <div class="no-image-placeholder" style="display: <?php echo !empty($book['image_url']) ? 'none' : 'flex'; ?>;">
+                        No Image
+                    </div>
+                </div>
+
+                <div class="book-details-wrapper">
+                    <h1 class="book-title"><?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?></h1>
+                    
+                    <ul class="book-meta-list">
+                        <li class="book-meta-item">
+                            <span class="book-meta-label">著者</span>
+                            <span class="book-meta-value"><?php echo htmlspecialchars($book['author'], ENT_QUOTES, 'UTF-8'); ?></span>
+                        </li>
+                        <li class="book-meta-item">
+                            <span class="book-meta-label">出版社</span>
+                            <span class="book-meta-value"><?php echo htmlspecialchars($book['publisher'], ENT_QUOTES, 'UTF-8'); ?></span>
+                        </li>
+                        <li class="book-meta-item">
+                            <span class="book-meta-label">出版年</span>
+                            <span class="book-meta-value"><?php echo htmlspecialchars($book['year'], ENT_QUOTES, 'UTF-8'); ?></span>
+                        </li>
+                        <li class="book-meta-item">
+                            <span class="book-meta-label">NDC</span>
+                            <span class="book-meta-value"><?php echo htmlspecialchars($book['ndc'], ENT_QUOTES, 'UTF-8'); ?></span>
+                        </li>
+                    </ul>
+                </div>
+
             </section>
 
             <section class="articles-section">
