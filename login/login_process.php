@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $_SESSION['logged_in'] = true;
 
         // ホーム画面（index.php）に自動で移動
-        header("Location: index.php");
+        header("Location: ../index.php");
         exit();
 
     } else {
