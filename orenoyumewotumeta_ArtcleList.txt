@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>図書室アプリ - 紹介記事一覧</title>
+    <style>
+        /* --- デザインシステム（Material Design 3 ベース） --- */
+        :root {
+            --md-sys-color-primary: #1a73e8;
+            --md-sys-color-background: #ffffff;
+            --md-sys-color-surface: #ffffff;
+            --md-sys-color-surface-variant: #f1f3f4;
+            --md-sys-color-on-surface: #1f1f1f;
+            --md-sys-color-on-surface-variant: #5f6368;
+            --md-sys-color-outline: #e0e0e0;
+            --max-content-width: 760px; /* PC・タブレットでのコンテンツ最大幅 */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif;
+            background-color: var(--md-sys-color-background);
+            color: var(--md-sys-color-on-surface);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- ヘッダー（戻るボタン付き） --- */
+        .app-header {
+            background-color: var(--md-sys-color-surface);
+            border-bottom: 1px solid var(--md-sys-color-outline);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            width: 100%;
+        }
+
+        .header-inner {
+            max-width: var(--max-content-width);
+            margin: 0 auto;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        /* ホームへ戻るボタン */
+        .back-button {
+            text-decoration: none;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 20px;
+            font-weight: 700;
+            padding: 4px 8px;
+            margin-left: -8px;
+            transition: opacity 0.2s;
+        }
+
+        .back-button:active {
+            opacity: 0.5;
+        }
+
+        .app-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        /* --- メインコンテンツエリア --- */
+        .main-content {
+            flex: 1;
+            width: 100%;
+            max-width: var(--max-content-width);
+            margin: 0 auto;
+            padding: 20px 20px 40px 20px; /* 一覧画面は左右の余白を最初から持たせる */
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        /* ページの見出し */
+        .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        /* --- 紹介記事カード（縦積み型） --- */
+        .article-card {
+            background-color: var(--md-sys-color-surface);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 16px; /* 少し丸みを強めてモダンに */
+            overflow: hidden;
+            display: flex;
+            flex-direction: column; /* スマホでは縦積みでしっかり文章を見せる */
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .article-card:active {
+            transform: scale(0.99);
+        }
+
+        /* 記事のメイン画像エリア */
+        .article-banner {
+            width: 100%;
+            height: 120px;
+            background-color: var(--md-sys-color-surface-variant);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 14px;
+            font-weight: bold;
+            border-bottom: 1px solid var(--md-sys-color-outline);
+        }
+
+        /* 記事のテキストコンテンツ */
+        .article-body {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .article-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        /* 対象の本のタイトル（タグ風のデザイン） */
+        .book-tag {
+            background-color: var(--md-sys-color-surface-variant);
+            color: var(--md-sys-color-on-surface);
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            max-width: 70%; /* 長すぎる本番タイトルのために制限 */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 紹介記事のタイトル */
+        .article-title {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.4;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        /* 本の紹介文（あらすじ・レビュー） */
+        .article-excerpt {
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--md-sys-color-on-surface-variant);
+            /* 3行を超える場合は「...」で省略 */
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* ==========================================================================
+           タブレット・PC向けのレスポンシブ調整 (ブレイクポイント: 768px以上)
+           ========================================================================== */
+        @media (min-width: 768px) {
+            .header-inner {
+                padding: 24px;
+            }
+
+            .app-title {
+                font-size: 22px;
+            }
+
+            .main-content {
+                padding: 40px 24px 60px 24px;
+                gap: 24px;
+            }
+
+            .page-title {
+                font-size: 24px;
+            }
+
+            /* PC向け：横長のレイアウトに変更してスペースを有効活用 */
+            .article-card {
+                flex-direction: row;
+                height: 180px;
+            }
+
+            .article-banner {
+                width: 240px;
+                height: 100%;
+                border-bottom: none;
+                border-right: 1px solid var(--md-sys-color-outline);
+            }
+
+            .article-body {
+                padding: 20px;
+                flex: 1;
+                justify-content: center;
+                gap: 12px;
+            }
+
+            .article-title {
+                font-size: 18px;
+            }
+
+            .article-excerpt {
+                font-size: 14px;
+            }
+
+            .article-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="header-inner">
+            <a href="#" class="back-button">❮</a>
+            <div class="app-title">図書室アプリ</div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        
+        <h1 class="page-title">新しい紹介記事</h1>
+
+        <a href="#" class="article-card">
+            <div class="article-banner">IMAGE</div>
+            <div class="article-body">
+                <div class="article-meta">
+                    <span class="book-tag">📖 心躍るWebデザインの基本...</span>
+                    <span class="article-date">2026.06.23</span>
+                </div>
+                <h2 class="article-title">【司書おすすめ】梅雨の季節にじっくり読みたい小説5選</h2>
+                <p class="article-excerpt">
+                    雨の音が心地よく響く静かな図書室から、この時期にぴったりな5冊をご紹介します。どんよりした気分を吹き飛ばす爽快なミステリーから、じっくり世界観に浸れる長編ファンタジーまで、ページをめくる手が止まらなくなる作品を厳選しました。
+                </p>
+            </div>
+        </a>
+
+        <a href="#" class="article-card">
+            <div class="article-banner">IMAGE</div>
+            <div class="article-body">
+                <div class="article-meta">
+                    <span class="book-tag">📖 未来を創るプログラミング...</span>
+                    <span class="article-date">2026.06.15</span>
+                </div>
+                <h2 class="article-title">試験勉強に役立つ！集中力を高めるための参考書の選び方</h2>
+                <p class="article-excerpt">
+                    「買ったはいいけれど途中で挫折してしまった…」そんな経験はありませんか？自分の現在のレベルに合った本の見極め方や、図解の多さ、解説の構成など、挫折せず最後までやり切るための実践的なチェックポイントを司書の視点で分かりやすく解説します。
+                </p>
+            </div>
+        </a>
+
+        <a href="#" class="article-card">
+            <div class="article-banner">IMAGE</div>
+            <div class="article-body">
+                <div class="article-meta">
+                    <span class="book-tag">📖 たのしい図書室の過ごし方</span>
+                    <span class="article-date">2026.06.02</span>
+                </div>
+                <h2 class="article-title">新緑の季節、本を片手に外へ出かけよう！読書スポット案内</h2>
+                <p class="article-excerpt">
+                    いつもの図書室を飛び出して、たまには青空の下で読書を楽しんでみませんか？今回は、学校周辺の穴場ベンチや、緑に囲まれて読書ができるおすすめのオープンスペースを紹介します。外で読むのにちょうどいい、軽めのエッセイも合わせてピックアップ！
+                </p>
+            </div>
+        </a>
+
+    </main>
+
+</body>
+</html>
