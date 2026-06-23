@@ -164,7 +164,7 @@ if (isset($_GET['error']) && $_GET['error'] == 1) {
 </head>
 <body>
 
-    <a href="index.php" class="back-button" aria-label="ホームに戻る">←</a>
+    <a href="../index.php" class="back-button" aria-label="ホームに戻る">←</a>
 
     <div class="login-container">
         <div class="login-header">
