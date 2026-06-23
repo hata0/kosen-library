@@ -216,7 +216,7 @@ $books = [
                 
                 <div class="book-card-list">
                     <?php foreach ($books as $book): ?>
-                        <a href="../book/?id=<?php echo htmlspecialchars($book['id'], ENT_QUOTES, 'UTF-8'); ?>" class="book-card">
+                        <a href="../books?id=<?php echo htmlspecialchars($book['id'], ENT_QUOTES, 'UTF-8'); ?>" class="book-card">
                             
                             <div class="book-card-image-wrapper">
                                 <?php if (!empty($book['image_url'])): ?>
