@@ -1,3 +1,10 @@
+<?php
+// エラーメッセージがURLパラメータ（?error=1）で渡ってきたら受け取る
+$error_message = "";
+if (isset($_GET['error']) && $_GET['error'] == 1) {
+    $error_message = "ログインに失敗しました";
+}
+?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -13,6 +20,8 @@
             --md-sys-color-on-surface: #1f1f1f;
             --md-sys-color-on-surface-variant: #5f6368;
             --md-sys-color-outline: #e0e0e0;
+            --md-sys-color-error: #ba1a1a; /* エラー用の赤色を追加 */
+            --md-sys-color-error-container: #ffdad6;
             --max-content-width: 760px;
         }
 
@@ -30,9 +39,9 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center; /* ログイン専用画面として中央配置 */
+            justify-content: center;
             align-items: center;
-            position: relative; /* 戻るボタンの基準点 */
+            position: relative;
         }
 
         /* --- ホームに戻る「←」ボタン --- */
@@ -54,7 +63,7 @@
         }
 
         .back-button:active {
-            background-color: #f1f3f4; /* タップした時に丸くグレーに光る */
+            background-color: #f1f3f4;
         }
 
         /* --- ログインコンテナ --- */
@@ -67,7 +76,6 @@
             gap: 32px;
         }
 
-        /* アプリロゴ・タイトル */
         .login-header {
             text-align: center;
         }
@@ -82,6 +90,17 @@
         .app-subtitle {
             font-size: 14px;
             color: var(--md-sys-color-on-surface-variant);
+        }
+
+        /* --- エラーメッセージのスタイル --- */
+        .error-banner {
+            background-color: var(--md-sys-color-error-container);
+            color: var(--md-sys-color-error);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            text-align: center;
         }
 
         /* --- フォームと入力エリア --- */
@@ -104,11 +123,10 @@
             padding-left: 4px;
         }
 
-        /* 入力欄：角丸ボックス型 */
         .form-input {
             width: 100%;
             padding: 16px;
-            font-size: 16px; /* スマホでのズーム防止 */
+            font-size: 16px;
             color: var(--md-sys-color-on-surface);
             background-color: #ffffff;
             border: 1px solid var(--md-sys-color-outline);
@@ -123,7 +141,6 @@
         }
 
         /* --- ボタン --- */
-        /* ログインボタン：カプセル型・画面フィット */
         .submit-button {
             width: 100%;
             padding: 16px 24px;
@@ -154,6 +171,10 @@
             <h1 class="app-title">図書室アプリ</h1>
             <p class="app-subtitle">アカウントにログインしてください</p>
         </div>
+
+        <?php if (!empty($error_message)): ?>
+            <div class="error-banner"><?php echo htmlspecialchars($error_message, ENT_QUOTES, 'UTF-8'); ?></div>
+        <?php endif; ?>
 
         <form class="login-form" action="login_process.php" method="POST">
             <div class="input-group">
