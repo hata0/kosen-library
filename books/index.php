@@ -5,6 +5,7 @@ $book_id = isset($_GET['id']) ? trim($_GET['id']) : '';
 // --- 【MVP用のダミーデータ】 ---
 // 本来は $book_id を使ってデータベースから取得します
 $book = [
+    'id' => '1',
     'title' => '坊っちゃん',
     'author' => '夏目漱石',
     'publisher' => '新潮社',
