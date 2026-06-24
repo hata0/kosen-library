@@ -1,0 +1,168 @@
+<?php
+// --- 【MVP用のダミーデータ】 ---
+// 本来はデータベース（booksテーブル）から全件取得、またはページネーション（LIMIT/OFFSET）で取得します
+$books = [
+    [
+        'id' => '1',
+        'title' => '坊っちゃん',
+        'author' => '夏目漱石',
+        'publisher' => '新潮社',
+        'year' => '1906年',
+        'ndc' => '913.6',
+        'image_url' => 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=200&q=80'
+    ],
+    [
+        'id' => '2',
+        'title' => '人間失格',
+        'author' => '太宰治',
+        'publisher' => '角川書店',
+        'year' => '1948年',
+        'ndc' => '913.6',
+        'image_url' => 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=200&q=80'
+    ],
+    [
+        'id' => '4',
+        'title' => '基本情報技術者 合格教本',
+        'author' => '高橋二郎',
+        'publisher' => '技術評論社',
+        'year' => '2025年',
+        'ndc' => '007.6',
+        'image_url' => 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=200&q=80'
+    ],
+    [
+        'id' => '5',
+        'title' => 'UI/UXデザインの基本',
+        'author' => '佐藤花子',
+        'publisher' => 'デザイン出版',
+        'year' => '2024年',
+        'ndc' => '548.2',
+        // 画像なしテスト用
+        'image_url' => ''
+    ]
+];
+?>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>蔵書一覧 - 図書室アプリ</title>
+    <style>
+        /* --- 共通デザインシステム（Material Design 3 ベース） --- */
+        :root {
+            --md-sys-color-primary: #1a73e8;
+            --md-sys-color-background: #ffffff;
+            --md-sys-color-surface: #ffffff;
+            --md-sys-color-surface-variant: #f8f9fa;
+            --md-sys-color-on-surface: #1f1f1f;
+            --md-sys-color-on-surface-variant: #5f6368;
+            --md-sys-color-outline: #e0e0e0;
+            --max-content-width: 760px;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; background-color: var(--md-sys-color-background); color: var(--md-sys-color-on-surface); min-height: 100vh; display: flex; flex-direction: column; }
+        
+        /* --- ヘッダー --- */
+        .app-header { background-color: var(--md-sys-color-surface); border-bottom: 1px solid var(--md-sys-color-outline); position: sticky; top: 0; z-index: 10; width: 100%; }
+        .header-inner { max-width: var(--max-content-width); margin: 0 auto; padding: 16px 20px 8px 20px; }
+        .app-title { font-size: 20px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 12px; }
+        .app-nav { display: flex; gap: 24px; }
+        .nav-item { text-decoration: none; color: var(--md-sys-color-on-surface-variant); font-size: 15px; font-weight: 500; padding: 6px 0; }
+        
+        /* --- メインコンテンツ --- */
+        .main-content { flex: 1; width: 100%; max-width: var(--max-content-width); margin: 0 auto; padding: 24px 20px; display: flex; flex-direction: column; }
+        
+        .page-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
+        .page-title { font-size: 22px; font-weight: 700; color: var(--md-sys-color-on-surface); }
+        .book-count { font-size: 14px; color: var(--md-sys-color-on-surface-variant); }
+        
+        .back-link { display: inline-block; margin-bottom: 16px; color: var(--md-sys-color-primary); text-decoration: none; font-weight: 500; font-size: 14px; }
+
+        /* --- 本のカードUI一覧スタイル --- */
+        .book-card-list { display: flex; flex-direction: column; gap: 14px; width: 100%; }
+        .book-card {
+            display: flex; flex-direction: row; text-decoration: none; color: inherit;
+            border: 1px solid var(--md-sys-color-outline); border-radius: 14px;
+            background-color: var(--md-sys-color-surface); overflow: hidden; transition: 0.2s;
+        }
+        .book-card:hover { border-color: transparent; background-color: var(--md-sys-color-surface-variant); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); }
+
+        .book-card-image-wrapper { width: 80px; aspect-ratio: 2 / 3; position: relative; flex-shrink: 0; background-color: var(--md-sys-color-surface-variant); border-right: 1px solid var(--md-sys-color-outline); }
+        .book-card-image { width: 100%; height: 100%; object-fit: cover; }
+        .no-image-placeholder { display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; color: var(--md-sys-color-on-surface-variant); font-size: 11px; font-weight: 500; }
+
+        .book-card-details { flex: 1; padding: 12px 14px; display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+        .book-card-title { font-size: 15px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .book-card-meta { font-size: 13px; color: var(--md-sys-color-on-surface-variant); line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .book-card-ndc { margin-top: 4px; display: inline-block; font-size: 11px; font-weight: 700; color: var(--md-sys-color-primary); background-color: rgba(26, 115, 232, 0.08); padding: 2px 8px; border-radius: 4px; width: fit-content; }
+
+        /* --- PC・タブレット向けのレスポンシブ調整 --- */
+        @media (min-width: 768px) {
+            .header-inner { padding: 24px 24px 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+            .app-title { margin-bottom: 0; font-size: 24px; }
+            .nav-item { font-size: 16px; }
+            .main-content { padding: 40px 24px; }
+            
+            .page-title { font-size: 26px; }
+            .book-card-list { gap: 16px; }
+            .book-card-image-wrapper { width: 90px; }
+            .book-card-details { padding: 16px 20px; }
+            .book-card-title { font-size: 18px; margin-bottom: 6px; }
+            .book-card-meta { font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="app-header">
+        <div class="header-inner">
+            <div class="app-title">図書室アプリ</div>
+            <nav class="app-nav">
+                <a href="../index.php" class="nav-item">ホーム</a>
+                <a href="#" class="nav-item">マイページ</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <a href="../index.php" class="back-link">← ホームに戻る</a>
+
+        <div class="page-header">
+            <h1 class="page-title">蔵書一覧</h1>
+            <div class="book-count">全 <?php echo count($books); ?> 冊</div>
+        </div>
+
+        <div class="book-card-list">
+            <?php foreach ($books as $book): ?>
+                <a href="../book/?id=<?php echo htmlspecialchars($book['id'], ENT_QUOTES, 'UTF-8'); ?>" class="book-card">
+                    
+                    <div class="book-card-image-wrapper">
+                        <?php if (!empty($book['image_url'])): ?>
+                            <img src="<?php echo htmlspecialchars($book['image_url'], ENT_QUOTES, 'UTF-8'); ?>" 
+                                 alt="<?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?>のカバー画像" 
+                                 class="book-card-image"
+                                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <?php endif; ?>
+                        <div class="no-image-placeholder" style="display: <?php echo !empty($book['image_url']) ? 'none' : 'flex'; ?>;">
+                            No Image
+                        </div>
+                    </div>
+
+                    <div class="book-card-details">
+                        <h2 class="book-card-title"><?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
+                        <div class="book-card-meta">
+                            <?php echo htmlspecialchars($book['author'], ENT_QUOTES, 'UTF-8'); ?> / 
+                            <?php echo htmlspecialchars($book['publisher'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo htmlspecialchars($book['year'], ENT_QUOTES, 'UTF-8'); ?>)
+                        </div>
+                        <div class="book-card-ndc">
+                            NDC: <?php echo htmlspecialchars($book['ndc'], ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
+                    </div>
+                </a>
+            <?php endforeach; ?>
+        </div>
+
+    </main>
+
+</body>
+</html>
