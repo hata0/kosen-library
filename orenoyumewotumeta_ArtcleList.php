@@ -1,9 +1,8 @@
 <?php
 // ==========================================================================
-// 1. 本来はデータベースから取得する「紹介記事」のテストデータ（件数が多い想定）
+// 1. 本来はデータベースから取得する「紹介記事」のテストデータ（7件）
 // ==========================================================================
 $all_articles = [
-    // --- 1ページ目用のデータ ---
     [
         'id' => 1,
         'date' => '2026.06.23',
@@ -18,8 +17,6 @@ $all_articles = [
         'article_title' => '試験勉強に役立つ！集中力を高めるための参考書の選び方',
         'excerpt' => '「買ったはいいけれど途中で挫折してしまった…」そんな経験はありませんか？自分の現在のレベルに合った本の見極め方を解説します。'
     ],
-    
-    // --- 2ページ目用のデータ ---
     [
         'id' => 3,
         'date' => '2026.06.02',
@@ -34,35 +31,47 @@ $all_articles = [
         'article_title' => '読書が苦手なキミへ。10分で一気に引き込まれる短編集',
         'excerpt' => '長い小説を読む体力がなくても大丈夫！朝の読書時間や通学の電車の中でサクッと読めて、なおかつ強烈な余韻を残すおすすめの作品です。'
     ],
-    
-    // --- 3ページ目用のデータ ---
     [
         'id' => 5,
         'date' => '2026.05.01',
         'book_title' => '歴史を知る・学ぶ本',
         'article_title' => 'タイムトラベル気分！物語として読める面白い歴史書',
         'excerpt' => '暗記ばかりの歴史が苦手という人必見。まるで小説を読んでいるかのように当時のドラマが頭に入ってくる本を集めました。'
+    ],
+    [
+        'id' => 6,
+        'date' => '2026.04.18',
+        'book_title' => '図解でわかるサイエンス',
+        'article_title' => '文系でもハマる！宇宙の不思議と量子力学の超入門書',
+        'excerpt' => '数式を一切使わずに、綺麗なイラストと例え話だけで宇宙の始まりやミクロの世界を解説。知的好奇心が刺激される一冊です。'
+    ],
+    [
+        'id' => 7,
+        'date' => '2026.04.05',
+        'book_title' => '伝わる文章術の極意',
+        'article_title' => 'レポートや作文がスラスラ書ける！３つの文章テンプレート',
+        'excerpt' => '「何から書き始めればいいかわからない」を解決。文章の型に当てはめるだけで、誰でも説得力のある文章が書けるテクニックを伝授。'
     ]
 ];
 
 // ==========================================================================
 // 2. ページネーション（件数制御）のPHPロジック
 // ==========================================================================
-$per_page = 2; // 1ページあたりに表示する記事数
-$total_articles = count($all_articles); // 全記事数
-$total_pages = ceil($total_articles / $per_page); // 総ページ数（今回は全5件÷2 = 3ページ）
+$per_page = 4; // ★ 1ページあたりの表示件数を 4 に変更しました
+$total_articles = count($all_articles); 
+$total_pages = ceil($total_articles / $per_page); 
 
-// 現在のページ数をURLパラメータ（?page=X）から取得。なければ1ページ目にする
+// 現在のページ数をURLパラメータ（?page=X）から取得
 $current_page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 
-// ページ数が範囲外（1未満、または最大ページ超）だった場合のガード処理
+// ガード処理
 if ($current_page < 1) {
     $current_page = 1;
 } elseif ($current_page > $total_pages) {
     $current_page = $total_pages;
 }
 
-// 配列から現在のページに表示する分だけを切り出す（MySQLのLIMIT句のような処理）
+// 配列から現在のページに表示する分だけを切り出す
 $offset = ($current_page - 1) * $per_page;
 $display_articles = array_slice($all_articles, $offset, $per_page);
 ?>
@@ -260,7 +269,7 @@ $display_articles = array_slice($all_articles, $offset, $per_page);
             overflow: hidden;
         }
 
-        /* --- ページネーション（リンク型） --- */
+        /* --- ページネーション --- */
         .pagination {
             display: flex;
             justify-content: center;
@@ -291,12 +300,12 @@ $display_articles = array_slice($all_articles, $offset, $per_page);
             background-color: var(--md-sys-color-primary);
             color: #ffffff;
             border-color: var(--md-sys-color-primary);
-            pointer-events: none; /* 現在のページはクリック不可に */
+            pointer-events: none;
         }
 
         .page-btn.disabled {
             opacity: 0.4;
-            pointer-events: none; /* 無効な矢印はクリック不可に */
+            pointer-events: none;
         }
 
         .page-btn:active {
