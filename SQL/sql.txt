@@ -1,0 +1,92 @@
+CREATE DATABASE IF NOT EXISTS library_app DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE library_app;
+
+DROP TABLE IF EXISTS borrow_records; -- 🌟 テーブル名変更
+DROP TABLE IF EXISTS articles;
+DROP TABLE IF EXISTS books;
+DROP TABLE IF EXISTS users;
+
+-- ==========================================================================
+-- [構造定義] 全テーブルの作成（ON DELETE CASCADE を実装）
+-- ==========================================================================
+
+-- 1. users テーブルの作成（表3）
+CREATE TABLE users (
+    id INT AUTO_INCREMENT NOT NULL COMMENT '連番ID (サロゲートキー)',
+    student_id VARCHAR(20) NOT NULL COMMENT '学籍番号/ユーザーID (ユニーク属性)',
+    password VARCHAR(255) NOT NULL COMMENT 'ハッシュ化したパスワード',
+    name VARCHAR(100) NOT NULL COMMENT 'ユーザー名',
+    is_deleted TINYINT DEFAULT 0 NOT NULL COMMENT '論理削除フラグ (0: 有効, 1: 削除済み)',
+    PRIMARY KEY (id),
+    UNIQUE (student_id)
+) ENGINE=InnoDB COMMENT='ユーザー';
+
+-- 2. books テーブルの作成（表4）
+CREATE TABLE books (
+    id INT AUTO_INCREMENT NOT NULL COMMENT '連番ID',
+    title VARCHAR(255) NOT NULL COMMENT '本のタイトル',
+    author VARCHAR(100) NOT NULL COMMENT '著者名',
+    publisher VARCHAR(255) NOT NULL COMMENT '出版社',
+    year INT NOT NULL COMMENT '出版年',
+    ndc INT NULL COMMENT 'NDC (日本十進分類法)',
+    genre VARCHAR(100) NOT NULL COMMENT 'ジャンル',
+    is_deleted TINYINT DEFAULT 0 NOT NULL COMMENT '論理削除フラグ (0: 有効, 1: 削除済み)',
+    image_url VARCHAR(255) NULL COMMENT '本の表紙の画像url',
+    PRIMARY KEY (id)
+) ENGINE=InnoDB COMMENT='本';
+
+-- 3. articles テーブルの作成（表5）
+CREATE TABLE articles (
+    id INT AUTO_INCREMENT NOT NULL COMMENT '連番ID',
+    user_id INT NOT NULL COMMENT '誰が書いたか',
+    book_id INT NOT NULL COMMENT 'どの本についてか',
+    title TEXT NOT NULL COMMENT '記事のタイトル',
+    content TEXT NOT NULL COMMENT '紹介本文',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL COMMENT '投稿日時',
+    is_deleted TINYINT DEFAULT 0 NOT NULL COMMENT '論理削除フラグ (0: 有効, 1: 削除済み)',
+    PRIMARY KEY (id),
+    CONSTRAINT fk_articles_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_articles_book FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
+) ENGINE=InnoDB COMMENT='紹介記事';
+
+-- 4. borrow_records テーブルの作成（表6 - 🌟 テーブル名変更）
+CREATE TABLE borrow_records (
+    id INT AUTO_INCREMENT NOT NULL COMMENT '連番ID',
+    user_id INT NOT NULL COMMENT '誰が借りたか',
+    book_id INT NOT NULL COMMENT 'どの本を借りたか',
+    loan_date DATE NOT NULL COMMENT '貸出日',
+    return_date DATE NULL COMMENT '返却期限 (または返却日)',
+    PRIMARY KEY (id),
+    -- 制約名もあわせて変更
+    CONSTRAINT fk_borrow_records_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_borrow_records_book FOREIGN KEY (book_id) REFERENCES books(id) ON DELETE CASCADE
+) ENGINE=InnoDB COMMENT='貸出履歴';
+
+
+-- ==========================================================================
+-- [デモデータ] 初期データの挿入
+-- ==========================================================================
+
+-- 1. users データ
+INSERT INTO users (id, student_id, password, name, is_deleted) VALUES
+(1, 'k22000', 'password', 'テスト太郎（ログイン確認用）', 0),
+(2, 'k22001', 'password', '山田花子', 0),
+(3, 'k22002', 'password', '鈴木一郎', 0);
+
+-- 2. books データ
+INSERT INTO books (id, title, author, publisher, year, ndc, genre, is_deleted, image_url) VALUES
+(1, 'AI入門', '山田太郎', '技術創出出版', 2024, '007', 'テクノロジー', 0, 'images/covers/ai_nyumon.png'),
+(2, 'Python実践開発', '佐藤次郎', 'システムノート社', 2025, '007', 'プログラミング', 0, 'images/covers/python_jissen.png'),
+(3, 'こころ', '夏目漱石', '青空文庫選書', 2010, '913', '文学', 0, 'images/covers/kokoro.png'),
+(4, 'デザインの教科書', 'デザイン研究会', 'クリエイティブ・ラボ', 2023, '727', 'アート・デザイン', 0, 'images/covers/design_textbook.png');
+
+-- 3. articles データ
+INSERT INTO articles (id, user_id, book_id, title, content, is_deleted, created_at) VALUES
+(1, 1, 1, '文系にこそ読んでほしい一冊', '非常に読みやすかったです！数式がほとんど出てこないので、プログラミング経験がなくてもAIの全体像をイメージすることができました。最初の一冊として本当におすすめです。', 0, '2026-05-20 14:30:00'),
+(2, 2, 2, '実務に直結するテクニックが満載', '基本文法を学び終えた後に読むと、一気に実践力がつく素晴らしい内容でした。特にWebAPIとの連携部分の解説が丁寧で、すぐに自分の開発に活かせます。', 0, '2026-05-10 09:15:00');
+
+-- 4. borrow_records データ（🌟 送信先テーブル名を変更）
+INSERT INTO borrow_records (id, user_id, book_id, loan_date, return_date) VALUES
+(1, 1, 1, '2026-05-01', '2026-05-15'),
+(2, 1, 2, '2026-04-10', '2026-04-24'),
+(3, 2, 3, '2026-06-25', NULL);
