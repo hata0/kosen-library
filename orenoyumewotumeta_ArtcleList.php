@@ -119,35 +119,15 @@ $display_articles = array_slice($all_articles, $offset, $per_page);
             z-index: 10;
             width: 100%;
         }
-
         .header-inner {
             max-width: var(--max-content-width);
             margin: 0 auto;
-            padding: 16px 20px;
+            padding: 16px 20px 8px 20px;
             display: flex;
-            align-items: center;
-            gap: 16px;
         }
-
-        .back-button {
-            text-decoration: none;
-            color: var(--md-sys-color-on-surface-variant);
-            font-size: 20px;
-            font-weight: 700;
-            padding: 4px 8px;
-            margin-left: -8px;
-            transition: opacity 0.2s;
-        }
-
-        .back-button:active {
-            opacity: 0.5;
-        }
-
-        .app-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--md-sys-color-on-surface);
-        }
+        .app-title { font-size: 20px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 12px; margin-right: auto; }
+        .app-nav { display: flex; gap: 24px; }
+        .nav-item { text-decoration: none; color: var(--md-sys-color-on-surface-variant); font-size: 15px; font-weight: 500; padding: 6px 0; }
 
         /* --- メインコンテンツエリア --- */
         .main-content {
@@ -155,10 +135,10 @@ $display_articles = array_slice($all_articles, $offset, $per_page);
             width: 100%;
             max-width: var(--max-content-width);
             margin: 0 auto;
-            padding: 20px 0 40px 0;
+            padding: 24px 20px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 28px;
         }
 
         .page-header {
@@ -316,14 +296,10 @@ $display_articles = array_slice($all_articles, $offset, $per_page);
            タブレット・PC向けのレスポンシブ調整 (ブレイクポイント: 768px以上)
            ========================================================================== */
         @media (min-width: 768px) {
-            .header-inner {
-                padding: 24px;
-            }
-
-            .main-content {
-                padding: 40px 24px 60px 24px;
-                gap: 28px;
-            }
+            .header-inner { padding: 24px 24px 12px 24px; display: flex; justify-content: space-between; align-items: center; }
+            .app-title { margin-bottom: 0; font-size: 24px; }
+            .nav-item { font-size: 16px; }
+            .main-content { padding: 40px 24px; }
 
             .page-header, .search-box, .articles-container, .pagination {
                 padding: 0;
@@ -351,8 +327,11 @@ $display_articles = array_slice($all_articles, $offset, $per_page);
 
     <header class="app-header">
         <div class="header-inner">
-            <a href="../index.php" class="back-button">❮</a>
             <div class="app-title">図書室アプリ</div>
+            <nav class="app-nav">
+                <a href="../index.php" class="nav-item">ホーム</a>
+                <a href="#" class="nav-item">マイページ</a>
+            </nav>
         </div>
     </header>
 
