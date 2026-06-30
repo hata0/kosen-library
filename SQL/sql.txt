@@ -28,8 +28,7 @@ CREATE TABLE books (
     author VARCHAR(100) NOT NULL COMMENT '著者名',
     publisher VARCHAR(255) NOT NULL COMMENT '出版社',
     year INT NOT NULL COMMENT '出版年',
-    ndc INT NULL COMMENT 'NDC (日本十進分類法)',
-    genre VARCHAR(100) NOT NULL COMMENT 'ジャンル',
+    ndc VARCHAR(20) NULL COMMENT 'NDC (日本十進分類法)',
     is_deleted TINYINT DEFAULT 0 NOT NULL COMMENT '論理削除フラグ (0: 有効, 1: 削除済み)',
     image_url VARCHAR(255) NULL COMMENT '本の表紙の画像url',
     PRIMARY KEY (id)
@@ -74,11 +73,11 @@ INSERT INTO users (id, student_id, password, name, is_deleted) VALUES
 (3, 'k22002', 'password', '鈴木一郎', 0);
 
 -- 2. books データ
-INSERT INTO books (id, title, author, publisher, year, ndc, genre, is_deleted, image_url) VALUES
-(1, 'AI入門', '山田太郎', '技術創出出版', 2024, '007', 'テクノロジー', 0, 'images/covers/ai_nyumon.png'),
-(2, 'Python実践開発', '佐藤次郎', 'システムノート社', 2025, '007', 'プログラミング', 0, 'images/covers/python_jissen.png'),
-(3, 'こころ', '夏目漱石', '青空文庫選書', 2010, '913', '文学', 0, 'images/covers/kokoro.png'),
-(4, 'デザインの教科書', 'デザイン研究会', 'クリエイティブ・ラボ', 2023, '727', 'アート・デザイン', 0, 'images/covers/design_textbook.png');
+INSERT INTO books (id, title, author, publisher, year, ndc, is_deleted, image_url) VALUES
+(1, 'AI入門', '山田太郎', '技術創出出版', 2024, '007', 0, 'images/covers/ai_nyumon.png'),
+(2, 'Python実践開発', '佐藤次郎', 'システムノート社', 2025, '007', 0, 'images/covers/python_jissen.png'),
+(3, 'こころ', '夏目漱石', '青空文庫選書', 2010, '913', 0, 'images/covers/kokoro.png'),
+(4, 'デザインの教科書', 'デザイン研究会', 'クリエイティブ・ラボ', 2023, '727', 0, 'images/covers/design_textbook.png');
 
 -- 3. articles データ
 INSERT INTO articles (id, user_id, book_id, title, content, is_deleted, created_at) VALUES
