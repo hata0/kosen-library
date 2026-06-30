@@ -3,7 +3,7 @@
 $article_id = isset($_GET['id']) ? trim($_GET['id']) : '';
 
 // --- 【MVP用のダミーデータ】 ---
-// 本来は $article_id を使ってデータベース（articlesテーブルとbooksテーブルの結合など）から取得します
+// 本来は $article_id を使ってデータベース（articlesテーブル、booksテーブル、usersテーブルの結合）から取得します
 
 // 記事データ
 $article = [
@@ -11,7 +11,8 @@ $article = [
     'title' => '近代文学の金字塔を今こそ読むべき理由',
     'content' => "正義感が強すぎる主人公の葛藤と、ユーモア溢れるキャラクターたちの掛け合いが最高です。現代人が読んでも全く色褪せない魅力があります。\n\n特に印象的なのは、周囲の大人たちのずる賢さに対して、主人公がどこまでも真っ直ぐに、愚直なまでに自分の正義を貫こうとする姿勢です。一見すると不器用で損ばかりしているように見えますが、読み進めるうちにその純粋さに心を打たれます。\n\n文章も非常にテンポが良く、当時の言葉遣いでありながら現代の小説のようにスラスラと読めてしまうのも驚きです。読書が苦手な人にこそ、ぜひ最初のステップとして手に取ってほしい名作です。",
     'date' => '2026/06/20',
-    'book_id' => '1' // 紐づく本のID
+    'book_id' => '1', // 紐づく本のID
+    'user_name' => '名無し' // ★追加：投稿したユーザー名
 ];
 
 // 紐づく本のデータ
@@ -104,24 +105,48 @@ $book = [
             font-size: 22px;
             font-weight: 700;
             line-height: 1.4;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
             color: var(--md-sys-color-on-surface);
+        }
+        
+        /* ★追加・修正：記事のメタ情報（投稿者・日付）を横並びにするレイアウト */
+        .article-meta {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .article-author {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--md-sys-color-on-surface);
+            background-color: var(--md-sys-color-surface-variant);
+            padding: 6px 12px;
+            border-radius: 9999px; /* 丸みのあるチップ型 */
+            border: 1px solid var(--md-sys-color-outline);
+        }
+        .author-icon {
+            font-size: 14px;
+            color: var(--md-sys-color-on-surface-variant);
         }
         .article-date {
             font-size: 13px;
             color: var(--md-sys-color-on-surface-variant);
         }
         
-        /* 記事本文のタイポグラフィ（読みやすさ重視） */
+        /* 記事本文のタイポグラフィ */
         .article-body {
             font-size: 16px;
             line-height: 1.8;
             color: var(--md-sys-color-on-surface);
-            white-space: pre-wrap; /* 改行コードをそのまま反映 */
+            white-space: pre-wrap;
             letter-spacing: 0.3px;
         }
 
-        /* --- 紹介された本のカード（検索画面のパーツと統一） --- */
+        /* --- 紹介された本のカード --- */
         .related-book-section {
             margin-top: 8px;
         }
@@ -218,7 +243,7 @@ $book = [
             <div class="app-title">図書室アプリ</div>
             <nav class="app-nav">
                 <a href="../index.php" class="nav-item">ホーム</a>
-                <a href="#" class="nav-item">マイページ</a>
+                <a href="../mypage/" class="nav-item">マイページ</a>
             </nav>
         </div>
     </header>
@@ -226,11 +251,21 @@ $book = [
     <main class="main-content">
         <a href="javascript:history.back();" class="back-link">← 前の画面に戻る</a>
 
-        <?php if ($article_id !== ''): ?>
+        <?php if ($article_id !== '' || !empty($article)): ?>
             <article class="article-container">
                 <header class="article-header">
                     <h1 class="article-title"><?php echo htmlspecialchars($article['title'], ENT_QUOTES, 'UTF-8'); ?></h1>
-                    <div class="article-date">投稿日: <?php echo htmlspecialchars($article['date'], ENT_QUOTES, 'UTF-8'); ?></div>
+                    
+                    <div class="article-meta">
+                        <div class="article-author">
+                            <span class="author-icon">👤</span>
+                            <?php echo htmlspecialchars($article['user_name'], ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
+                        <div class="article-date">
+                            投稿日: <?php echo htmlspecialchars($article['date'], ENT_QUOTES, 'UTF-8'); ?>
+                        </div>
+                    </div>
+
                 </header>
                 
                 <div class="article-body"><?php echo htmlspecialchars($article['content'], ENT_QUOTES, 'UTF-8'); ?></div>
@@ -239,7 +274,7 @@ $book = [
             <section class="related-book-section">
                 <h2 class="section-title">この記事で紹介された本</h2>
                 
-                <a href="../books/?id=<?php echo htmlspecialchars($book['id'], ENT_QUOTES, 'UTF-8'); ?>" class="book-book-link book-card">
+                <a href="../books/?id=<?php echo htmlspecialchars($book['id'], ENT_QUOTES, 'UTF-8'); ?>" class="book-card">
                     
                     <div class="book-card-image-wrapper">
                         <?php if (!empty($book['image_url'])): ?>
