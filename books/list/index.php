@@ -107,14 +107,14 @@ try {
         <div class="header-inner">
             <div class="app-title">図書室アプリ</div>
             <nav class="app-nav">
-                <a href="../index.php" class="nav-item">ホーム</a>
-                <a href="#" class="nav-item">マイページ</a>
+                <a href="../../index.php" class="nav-item">ホーム</a>
+                <a href="../../mypage/" class="nav-item">マイページ</a>
             </nav>
         </div>
     </header>
 
     <main class="main-content">
-        <a href="../index.php" class="back-link">← ホームに戻る</a>
+        <a href="../../index.php" class="back-link">← ホームに戻る</a>
 
         <div class="page-header">
             <h1 class="page-title">蔵書一覧</h1>
@@ -123,7 +123,7 @@ try {
 
         <div class="book-card-list">
             <?php foreach ($books as $book): ?>
-                <a href="../book/?id=<?php echo htmlspecialchars($book['id'], ENT_QUOTES, 'UTF-8'); ?>" class="book-card">
+                <a href="../index.php?id=<?php echo htmlspecialchars($book['id'], ENT_QUOTES, 'UTF-8'); ?>" class="book-card">
                     
                     <div class="book-card-image-wrapper">
                         <?php if (!empty($book['image_url'])): ?>
