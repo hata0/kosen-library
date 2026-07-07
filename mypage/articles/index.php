@@ -47,7 +47,7 @@ try {
         $del_stmt = $pdo->prepare($delete_sql);
         $del_stmt->execute([
             ':id' => $delete_id,
-            ':user_id' => $current_user_id // 本人の記事しか削除できないように条件追加
+            ':user_id' => $current_user_id
         ]);
         
         // 処理後は自分自身にリダイレクトして二重送信を防止
@@ -59,10 +59,9 @@ try {
     // ---------------------------------------------------------
     // 2. 記事の取得（SELECT）処理
     // ---------------------------------------------------------
-    // articlesテーブルから、ログイン中ユーザーが書いた有効な(is_deleted=0)記事を取得
     $sql = "
         SELECT 
-            a.id AS intro_id,
+            a.id,              /* 記事の連番ID */
             a.book_id,
             a.title AS article_title,
             a.created_at
@@ -223,7 +222,7 @@ function h($string) {
                         <?php foreach ($introductions_data as $row): ?>
                             <tr>
                                 <td>
-                                    <a href="../../book_detail.php?id=<?= h($row['book_id']) ?>" class="article-title">
+                                    <a href="../../articles/index.php?id=<?= h($row['id']) ?>" class="article-title">
                                         <?= h($row['article_title']) ?>
                                     </a>
                                 </td>
@@ -232,9 +231,9 @@ function h($string) {
                                 </td>
                                 <td>
                                     <div class="action-buttons">
-                                        <a href="edit.php?id=<?= h($row['intro_id']) ?>" class="btn btn-primary">編集</a>
+                                        <a href="edit.php?id=<?= h($row['id']) ?>" class="btn btn-primary">編集</a>
                                         
-                                        <button type="button" class="btn btn-danger-outline" onclick="confirmDelete(<?= h($row['intro_id']) ?>)">削除</button>
+                                        <button type="button" class="btn btn-danger-outline" onclick="confirmDelete(<?= h($row['id']) ?>)">削除</button>
                                     </div>
                                 </td>
                             </tr>
@@ -251,10 +250,10 @@ function h($string) {
 
     <script>
         // 削除ボタンが押されたときの確認ダイアログとPOST送信処理
-        function confirmDelete(introId) {
+        function confirmDelete(articleId) {
             if (confirm('この記事を本当に削除しますか？\n（※削除後は元に戻せません）')) {
-                // 隠しフォームのID入力欄に、消したい記事のIDをセット
-                document.getElementById('delete_id').value = introId;
+                // 隠しフォームのID入力欄に、消したい記事の連番idをセット
+                document.getElementById('delete_id').value = articleId;
                 // フォームを送信
                 document.getElementById('delete-form').submit();
             }
