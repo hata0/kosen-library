@@ -228,7 +228,7 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
                 <?php if (!empty($books)): ?>
                     <div class="book-card-list">
                         <?php foreach ($books as $book): ?>
-                            <a href="../book_detail.php?id=<?php echo htmlspecialchars($book['id'], ENT_QUOTES, 'UTF-8'); ?>" class="book-card">
+                            <a href="../books/index.php?id=<?php echo htmlspecialchars($book['id'], ENT_QUOTES, 'UTF-8'); ?>" class="book-card">
                                 
                                 <div class="book-card-image-wrapper">
                                     <?php if (!empty($book['image_url']) && file_exists('../' . $book['image_url'])): ?>
