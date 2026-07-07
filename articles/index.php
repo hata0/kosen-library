@@ -1,37 +1,79 @@
 <?php
-// URLパラメータから記事のIDを取得（未指定の場合は空文字）
-$article_id = isset($_GET['id']) ? trim($_GET['id']) : '';
+// セッションの開始
+session_start();
 
-// --- 【MVP用のダミーデータ】 ---
-// 本来は $article_id を使ってデータベース（articlesテーブル、booksテーブル、usersテーブルの結合）から取得します
+// データベース接続設定
+$db_host = 'localhost';
+$db_name = 'library_app'; // sql.txtで定義されたデータベース名
+$db_user = 'root';        // ご自身の環境に合わせて変更してください
+$db_pass = '';            // ご自身の環境に合わせて変更してください
 
-// 記事データ
-$article = [
-    'id' => '101',
-    'title' => '近代文学の金字塔を今こそ読むべき理由',
-    'content' => "正義感が強すぎる主人公の葛藤と、ユーモア溢れるキャラクターたちの掛け合いが最高です。現代人が読んでも全く色褪せない魅力があります。\n\n特に印象的なのは、周囲の大人たちのずる賢さに対して、主人公がどこまでも真っ直ぐに、愚直なまでに自分の正義を貫こうとする姿勢です。一見すると不器用で損ばかりしているように見えますが、読み進めるうちにその純粋さに心を打たれます。\n\n文章も非常にテンポが良く、当時の言葉遣いでありながら現代の小説のようにスラスラと読めてしまうのも驚きです。読書が苦手な人にこそ、ぜひ最初のステップとして手に取ってほしい名作です。",
-    'date' => '2026/06/20',
-    'book_id' => '1', // 紐づく本のID
-    'user_name' => '名無し' // ★追加：投稿したユーザー名
-];
+// URLパラメータから記事のIDを取得
+$article_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-// 紐づく本のデータ
-$book = [
-    'id' => '1',
-    'title' => '坊っちゃん',
-    'author' => '夏目漱石',
-    'publisher' => '新潮社',
-    'year' => '1906年',
-    'ndc' => '913.6',
-    'image_url' => 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=200&q=80'
-];
+$article_data = null;
+$error_message = '';
+
+try {
+    // PDOによるデータベース接続
+    $dsn = "mysql:host={$db_host};dbname={$db_name};charset=utf8mb4";
+    $options = [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES   => false,
+    ];
+    $pdo = new PDO($dsn, $db_user, $db_pass, $options);
+
+    // 記事IDが指定されている場合のみデータ取得を実行
+    if ($article_id > 0) {
+        // articles, users, books の3テーブルを結合して必要な情報をすべて取得
+        // 論理削除（is_deleted = 1）されているものは除外する
+        $sql = "
+            SELECT 
+                a.id AS article_id,
+                a.title AS article_title,
+                a.content,
+                a.created_at,
+                u.name AS user_name,
+                b.id AS book_id,
+                b.title AS book_title,
+                b.author,
+                b.publisher,
+                b.image_url
+            FROM 
+                articles a
+            JOIN 
+                users u ON a.user_id = u.id
+            JOIN 
+                books b ON a.book_id = b.id
+            WHERE 
+                a.id = :id 
+                AND a.is_deleted = 0 
+                AND u.is_deleted = 0 
+                AND b.is_deleted = 0
+            LIMIT 1
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute([':id' => $article_id]);
+        $article_data = $stmt->fetch();
+    }
+
+} catch (PDOException $e) {
+    $error_message = 'データベース接続エラー: ' . $e->getMessage();
+}
+
+// XSS対策用関数
+function h($string) {
+    return htmlspecialchars((string)$string, ENT_QUOTES, 'UTF-8');
+}
 ?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?php echo htmlspecialchars($article['title'], ENT_QUOTES, 'UTF-8'); ?> - 図書室アプリ</title>
+    <title><?= $article_data ? h($article_data['article_title']) : '記事が見つかりません' ?> - 図書室アプリ</title>
     <style>
         /* --- 共通デザインシステム（Material Design 3 ベース） --- */
         :root {
@@ -59,38 +101,22 @@ $book = [
         .app-header {
             background-color: var(--md-sys-color-surface);
             border-bottom: 1px solid var(--md-sys-color-outline);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            width: 100%;
+            position: sticky; top: 0; z-index: 10; width: 100%;
         }
-        .header-inner {
-            max-width: var(--max-content-width);
-            margin: 0 auto;
-            padding: 16px 20px 8px 20px;
-        }
+        .header-inner { max-width: var(--max-content-width); margin: 0 auto; padding: 16px 20px 8px 20px; }
         .app-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; }
         .app-nav { display: flex; gap: 24px; }
         .nav-item { text-decoration: none; color: var(--md-sys-color-on-surface-variant); font-size: 15px; font-weight: 500; padding: 6px 0; }
 
         /* --- メインコンテンツ --- */
         .main-content {
-            flex: 1;
-            width: 100%;
-            max-width: var(--max-content-width);
-            margin: 0 auto;
-            padding: 24px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 24px;
+            flex: 1; width: 100%; max-width: var(--max-content-width);
+            margin: 0 auto; padding: 24px 20px; display: flex; flex-direction: column; gap: 24px;
         }
 
         .back-link {
-            display: inline-block;
-            color: var(--md-sys-color-primary);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
+            display: inline-block; color: var(--md-sys-color-primary);
+            text-decoration: none; font-weight: 500; font-size: 14px;
         }
 
         /* --- 記事詳細エリア --- */
@@ -98,127 +124,71 @@ $book = [
             border-bottom: 1px solid var(--md-sys-color-outline);
             padding-bottom: 32px;
         }
-        .article-header {
-            margin-bottom: 24px;
-        }
+        .article-header { margin-bottom: 24px; }
         .article-title {
-            font-size: 22px;
-            font-weight: 700;
-            line-height: 1.4;
-            margin-bottom: 16px;
-            color: var(--md-sys-color-on-surface);
+            font-size: 22px; font-weight: 700; line-height: 1.4;
+            margin-bottom: 16px; color: var(--md-sys-color-on-surface);
         }
         
-        /* ★追加・修正：記事のメタ情報（投稿者・日付）を横並びにするレイアウト */
         .article-meta {
-            display: flex;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
+            display: flex; align-items: center; flex-wrap: wrap; gap: 16px;
         }
         .article-author {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            color: var(--md-sys-color-on-surface);
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 13px; font-weight: 600; color: var(--md-sys-color-on-surface);
             background-color: var(--md-sys-color-surface-variant);
-            padding: 6px 12px;
-            border-radius: 9999px; /* 丸みのあるチップ型 */
-            border: 1px solid var(--md-sys-color-outline);
+            padding: 6px 12px; border-radius: 9999px; border: 1px solid var(--md-sys-color-outline);
         }
-        .author-icon {
-            font-size: 14px;
-            color: var(--md-sys-color-on-surface-variant);
-        }
-        .article-date {
-            font-size: 13px;
-            color: var(--md-sys-color-on-surface-variant);
-        }
+        .author-icon { font-size: 14px; color: var(--md-sys-color-on-surface-variant); }
+        .article-date { font-size: 13px; color: var(--md-sys-color-on-surface-variant); }
         
-        /* 記事本文のタイポグラフィ */
         .article-body {
-            font-size: 16px;
-            line-height: 1.8;
-            color: var(--md-sys-color-on-surface);
-            white-space: pre-wrap;
-            letter-spacing: 0.3px;
+            font-size: 16px; line-height: 1.8; color: var(--md-sys-color-on-surface);
+            white-space: pre-wrap; letter-spacing: 0.3px;
         }
 
         /* --- 紹介された本のカード --- */
-        .related-book-section {
-            margin-top: 8px;
-        }
+        .related-book-section { margin-top: 8px; }
         .section-title {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--md-sys-color-on-surface-variant);
-            margin-bottom: 12px;
-            letter-spacing: 0.5px;
+            font-size: 15px; font-weight: 700; color: var(--md-sys-color-on-surface-variant);
+            margin-bottom: 12px; letter-spacing: 0.5px;
         }
         .book-card {
-            display: flex;
-            flex-direction: row;
-            text-decoration: none;
-            color: inherit;
-            border: 1px solid var(--md-sys-color-outline);
-            border-radius: 14px;
-            background-color: var(--md-sys-color-surface);
-            overflow: hidden;
-            transition: 0.2s;
+            display: flex; flex-direction: row; text-decoration: none; color: inherit;
+            border: 1px solid var(--md-sys-color-outline); border-radius: 14px;
+            background-color: var(--md-sys-color-surface); overflow: hidden; transition: 0.2s;
         }
         .book-card:hover {
-            border-color: transparent;
-            background-color: var(--md-sys-color-surface-variant);
+            border-color: transparent; background-color: var(--md-sys-color-surface-variant);
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
         .book-card-image-wrapper {
-            width: 72px;
-            aspect-ratio: 2 / 3;
-            position: relative;
-            flex-shrink: 0;
-            background-color: var(--md-sys-color-surface-variant);
-            border-right: 1px solid var(--md-sys-color-outline);
+            width: 72px; aspect-ratio: 2 / 3; position: relative; flex-shrink: 0;
+            background-color: var(--md-sys-color-surface-variant); border-right: 1px solid var(--md-sys-color-outline);
         }
-        .book-card-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .book-card-image { width: 100%; height: 100%; object-fit: cover; }
         .no-image-placeholder {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            align-items: center;
-            justify-content: center;
-            color: var(--md-sys-color-on-surface-variant);
-            font-size: 11px;
-            font-weight: 500;
+            display: flex; width: 100%; height: 100%; align-items: center;
+            justify-content: center; color: var(--md-sys-color-on-surface-variant);
+            font-size: 11px; font-weight: 500;
         }
         .book-card-details {
-            flex: 1;
-            padding: 12px 14px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            min-width: 0;
+            flex: 1; padding: 12px 14px; display: flex; flex-direction: column;
+            justify-content: center; min-width: 0;
         }
         .book-card-title {
-            font-size: 14px;
-            font-weight: 700;
-            color: var(--md-sys-color-on-surface);
-            margin-bottom: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 14px; font-weight: 700; color: var(--md-sys-color-on-surface);
+            margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .book-card-meta {
-            font-size: 12px;
-            color: var(--md-sys-color-on-surface-variant);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 12px; color: var(--md-sys-color-on-surface-variant);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
+        /* アラートエラー */
+        .alert-error {
+            padding: 16px; background-color: #fdeded; color: #d32f2f;
+            border-radius: 8px; font-size: 14px; font-weight: 500; margin-bottom: 24px;
         }
 
         /* --- タブレット・PC向けレスポンシブ調整 --- */
@@ -251,54 +221,58 @@ $book = [
     <main class="main-content">
         <a href="javascript:history.back();" class="back-link">← 前の画面に戻る</a>
 
-        <?php if ($article_id !== '' || !empty($article)): ?>
+        <?php if ($error_message): ?>
+            <div class="alert-error"><?= h($error_message) ?></div>
+        <?php endif; ?>
+
+        <?php if ($article_data): ?>
             <article class="article-container">
                 <header class="article-header">
-                    <h1 class="article-title"><?php echo htmlspecialchars($article['title'], ENT_QUOTES, 'UTF-8'); ?></h1>
+                    <h1 class="article-title"><?= h($article_data['article_title']) ?></h1>
                     
                     <div class="article-meta">
                         <div class="article-author">
                             <span class="author-icon">👤</span>
-                            <?php echo htmlspecialchars($article['user_name'], ENT_QUOTES, 'UTF-8'); ?>
+                            <?= h($article_data['user_name']) ?>
                         </div>
                         <div class="article-date">
-                            投稿日: <?php echo htmlspecialchars($article['date'], ENT_QUOTES, 'UTF-8'); ?>
+                            投稿日: <?= h(date('Y/m/d H:i', strtotime($article_data['created_at']))) ?>
                         </div>
                     </div>
-
                 </header>
                 
-                <div class="article-body"><?php echo htmlspecialchars($article['content'], ENT_QUOTES, 'UTF-8'); ?></div>
+                <div class="article-body"><?= h($article_data['content']) ?></div>
             </article>
 
             <section class="related-book-section">
                 <h2 class="section-title">この記事で紹介された本</h2>
                 
-                <a href="../books/?id=<?php echo htmlspecialchars($book['id'], ENT_QUOTES, 'UTF-8'); ?>" class="book-card">
+                <a href="../books/?id=<?= h($article_data['book_id']) ?>" class="book-card">
                     
                     <div class="book-card-image-wrapper">
-                        <?php if (!empty($book['image_url'])): ?>
-                            <img src="<?php echo htmlspecialchars($book['image_url'], ENT_QUOTES, 'UTF-8'); ?>" 
-                                 alt="<?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?>のカバー画像" 
+                        <?php if (!empty($article_data['image_url'])): ?>
+                            <img src="../<?= h($article_data['image_url']) ?>" 
+                                 alt="<?= h($article_data['book_title']) ?>のカバー画像" 
                                  class="book-card-image"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                         <?php endif; ?>
-                        <div class="no-image-placeholder" style="display: <?php echo !empty($book['image_url']) ? 'none' : 'flex'; ?>;">
+                        <div class="no-image-placeholder" style="display: <?= !empty($article_data['image_url']) ? 'none' : 'flex' ?>;">
                             No Image
                         </div>
                     </div>
 
                     <div class="book-card-details">
-                        <h3 class="book-card-title"><?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
+                        <h3 class="book-card-title"><?= h($article_data['book_title']) ?></h3>
                         <div class="book-card-meta">
-                            <?php echo htmlspecialchars($book['author'], ENT_QUOTES, 'UTF-8'); ?> / 
-                            <?php echo htmlspecialchars($book['publisher'], ENT_QUOTES, 'UTF-8'); ?>
+                            <?= h($article_data['author']) ?> / <?= h($article_data['publisher']) ?>
                         </div>
                     </div>
                 </a>
             </section>
         <?php else: ?>
-            <p>記事の情報が見つかりませんでした。</p>
+            <div style="text-align: center; padding: 40px; border: 1px dashed #e0e0e0; border-radius: 12px; color: #5f6368; margin-top: 24px;">
+                指定された記事が存在しないか、既に削除されています。
+            </div>
         <?php endif; ?>
     </main>
 
