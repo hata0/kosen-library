@@ -2,6 +2,30 @@
 // セッションの開始
 session_start();
 
+// =========================================================
+// 【ログアウト処理】
+// =========================================================
+if (isset($_GET['action']) && $_GET['action'] === 'logout') {
+    // セッション変数をすべて解除
+    $_SESSION = array();
+    // セッションを破棄
+    session_destroy();
+    // ログイン画面へリダイレクト（環境に合わせてパスは調整してください）
+    header("Location: ../login/index.php");
+    exit();
+}
+
+// =========================================================
+// 【ログインチェック】
+// =========================================================
+// セッションに user_id が無い（未ログイン）場合はログイン画面へ強制移動
+if (!isset($_SESSION['user_id'])) {
+    header("Location: ../login/index.php");
+    exit();
+}
+$current_user_id = $_SESSION['user_id'];
+
+
 // データベース接続設定
 $db_host = 'localhost';
 $db_name = 'library_app'; // sql.txtで定義されたデータベース名
@@ -21,16 +45,6 @@ try {
         PDO::ATTR_EMULATE_PREPARES   => false,
     ];
     $pdo = new PDO($dsn, $db_user, $db_pass, $options);
-
-    // =========================================================
-    // 【認証のシミュレーション】
-    // 本来はログイン時に $_SESSION['user_id'] がセットされます。
-    // 今回は sql.txt にある ID:1 (テスト太郎 / k22000) でログインしている想定とします。
-    // =========================================================
-    if (!isset($_SESSION['user_id'])) {
-        $_SESSION['user_id'] = 1; 
-    }
-    $current_user_id = $_SESSION['user_id'];
 
     // ---------------------------------------------------------
     // 1. 保存（UPDATE）処理：フォームから送信された場合
@@ -98,6 +112,7 @@ function h($string) {
             --md-sys-color-on-surface: #1f1f1f;
             --md-sys-color-on-surface-variant: #5f6368;
             --md-sys-color-outline: #e0e0e0;
+            --md-sys-color-error: #b3261e; /* エラー用の赤色を追加 */
             --max-content-width: 760px;
         }
 
@@ -198,6 +213,18 @@ function h($string) {
         .menu-desc { font-size: 13px; color: var(--md-sys-color-on-surface-variant); margin-top: 2px; }
         .menu-arrow { color: var(--md-sys-color-on-surface-variant); font-size: 18px; font-weight: bold; }
 
+        /* ログアウトボタン専用スタイル */
+        .menu-item-logout {
+            justify-content: center;
+            color: var(--md-sys-color-error);
+            font-weight: 700;
+            background-color: transparent;
+            margin-top: 16px;
+        }
+        .menu-item-logout:hover {
+            background-color: rgba(179, 38, 30, 0.08); /* うっすら赤く光る */
+        }
+
         /* PC向け調整 */
         @media (min-width: 768px) {
             .header-inner { padding: 24px 24px 12px 24px; display: flex; justify-content: space-between; align-items: center; }
@@ -281,6 +308,10 @@ function h($string) {
                     <div class="menu-desc">自分が作成した本の紹介記事の確認・修正・削除ができます</div>
                 </div>
                 <div class="menu-arrow">&gt;</div>
+            </a>
+
+            <a href="?action=logout" class="menu-item menu-item-logout" onclick="return confirm('本当にログアウトしますか？');">
+                ログアウト
             </a>
         </div>
     </main>
