@@ -10,6 +10,7 @@
             --md-sys-color-primary: #1a73e8;
             --md-sys-color-background: #ffffff;
             --md-sys-color-surface: #ffffff;
+            --md-sys-color-surface-variant: #f1f3f4;
             --md-sys-color-on-surface: #1f1f1f;
             --md-sys-color-on-surface-variant: #5f6368;
             --md-sys-color-outline: #e0e0e0;
@@ -32,7 +33,7 @@
             flex-direction: column;
         }
 
-        /* --- ヘッダー（画面幅100%に広がるレスポンシブ設計） --- */
+        /* --- ヘッダー --- */
         .app-header {
             background-color: var(--md-sys-color-surface);
             border-bottom: 1px solid var(--md-sys-color-outline);
@@ -42,7 +43,6 @@
             width: 100%;
         }
 
-        /* ヘッダー内部を中央寄せし、左右の余白を管理 */
         .header-inner {
             max-width: var(--max-content-width);
             margin: 0 auto;
@@ -56,7 +56,6 @@
             margin-bottom: 12px;
         }
 
-        /* ナビゲーション（横並び） */
         .app-nav {
             display: flex;
             gap: 24px;
@@ -77,7 +76,6 @@
             font-weight: 700;
         }
 
-        /* アクティブ項目の下線表示 */
         .nav-item.active::after {
             content: '';
             position: absolute;
@@ -89,21 +87,21 @@
             border-radius: 3px 3px 0 0;
         }
 
-        /* --- メインコンテンツエリア（中央配置） --- */
+        /* --- メインコンテンツエリア --- */
         .main-content {
             flex: 1;
             width: 100%;
             max-width: var(--max-content-width);
             margin: 0 auto;
-            padding: 24px 20px;
+            padding: 24px 0 40px 0; /* 下部に程よい余白を持たせる */
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 32px;
         }
 
-        /* 検索バー（カプセル型） */
+        /* 検索バー */
         .search-container {
-            width: 100%;
+            padding: 0 20px;
         }
 
         .search-input {
@@ -111,7 +109,7 @@
             padding: 14px 24px;
             font-size: 16px;
             color: var(--md-sys-color-on-surface);
-            background-color: #f1f3f4; /* どんな背景にも馴染むライトグレー */
+            background-color: var(--md-sys-color-surface-variant);
             border: 1px solid transparent;
             border-radius: 9999px;
             outline: none;
@@ -128,24 +126,176 @@
             box-shadow: 0 1px 6px rgba(32, 33, 36, 0.1);
         }
 
-        /* 将来のコンテンツ追加用フリースペース */
-        .future-content-space {
-            flex: 1;
+        /* --- セクション共通の見出し部分 --- */
+        .section-header {
             display: flex;
-            flex-direction: column;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
-            border: 2px dashed var(--md-sys-color-outline);
-            border-radius: 16px;
-            padding: 60px 20px;
-            background-color: rgba(248, 249, 250, 0.5);
+            margin-bottom: 12px;
+            padding: 0 20px;
         }
 
-        .placeholder-text {
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .more-link {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--md-sys-color-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: opacity 0.2s;
+        }
+
+        .more-link:active {
+            opacity: 0.7;
+        }
+
+        /* --- 新着本セクション：横スクロール --- */
+        .books-grid {
+            display: flex;
+            overflow-x: auto;
+            flex-wrap: nowrap;
+            gap: 12px;
+            padding: 4px 20px 16px 20px;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .books-grid::-webkit-scrollbar {
+            display: none;
+        }
+
+        .book-card {
+            width: 140px;
+            flex-shrink: 0;
+            scroll-snap-align: start;
+            background-color: var(--md-sys-color-surface);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .book-card:active {
+            transform: scale(0.96);
+        }
+
+        .book-cover {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            background-color: var(--md-sys-color-surface-variant);
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: var(--md-sys-color-on-surface-variant);
+            font-size: 12px;
+            font-weight: bold;
+            border-bottom: 1px solid var(--md-sys-color-outline);
+        }
+
+        .book-info {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+
+        .book-title {
+            font-size: 13px;
+            font-weight: 700;
+            line-height: 1.4;
+            color: var(--md-sys-color-on-surface);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 36.4px;
+        }
+
+        .book-author {
+            font-size: 11px;
+            color: var(--md-sys-color-on-surface-variant);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* --- 新しい紹介記事セクション：スマホ向け縦並びリスト --- */
+        .articles-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 0 20px;
+        }
+
+        .article-card {
+            background-color: var(--md-sys-color-surface);
+            border: 1px solid var(--md-sys-color-outline);
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .article-card:active {
+            transform: scale(0.98);
+        }
+
+        .article-thumbnail {
+            width: 90px;
+            height: 90px;
+            flex-shrink: 0;
+            background-color: var(--md-sys-color-surface-variant);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 11px;
+            font-weight: bold;
+            border-right: 1px solid var(--md-sys-color-outline);
+        }
+
+        .article-info {
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 4px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .article-date {
+            font-size: 11px;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .article-title {
             font-size: 14px;
-            text-align: center;
-            line-height: 1.6;
+            font-weight: 700;
+            line-height: 1.4;
+            color: var(--md-sys-color-on-surface);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
         /* ==========================================================================
@@ -155,12 +305,12 @@
             .header-inner {
                 padding: 24px 24px 12px 24px;
                 display: flex;
-                justify-content: space-between; /* タイトルとナビを両端に分ける */
+                justify-content: space-between;
                 align-items: center;
             }
 
             .app-title {
-                margin-bottom: 0; /* PCでは縦積みを解消 */
+                margin-bottom: 0;
                 font-size: 24px;
             }
 
@@ -169,21 +319,55 @@
             }
 
             .nav-item.active::after {
-                bottom: -13px; /* 横並び時の下線位置を綺麗にフィットさせる */
+                bottom: -13px;
             }
 
             .main-content {
-                padding: 40px 24px;
-                gap: 32px;
+                padding: 40px 24px 60px 24px;
+                gap: 40px;
+            }
+
+            .search-container, .section-header, .articles-list {
+                padding: 0;
+                margin: 0;
             }
 
             .search-input {
-                padding: 16px 28px; /* 大画面向けに少しゆったりとしたサイズに */
+                padding: 16px 28px;
                 font-size: 17px;
             }
 
-            .placeholder-text {
+            .books-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+                padding: 0;
+                overflow-x: visible;
+            }
+
+            .book-card {
+                width: 100%;
+            }
+
+            .book-card:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            }
+
+            .book-title {
                 font-size: 15px;
+                height: auto;
+            }
+
+            .articles-list {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+
+            .article-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
             }
         }
     </style>
@@ -195,7 +379,7 @@
             <div class="app-title">図書室アプリ</div>
             <nav class="app-nav">
                 <a href="#" class="nav-item active">ホーム</a>
-                <a href="mypage/" class="nav-item">マイページ</a>
+                <a href="#" class="nav-item">マイページ</a>
             </nav>
         </div>
     </header>
@@ -207,12 +391,61 @@
             </form>
         </div>
 
-        <div class="future-content-space">
-            <p class="placeholder-text">
-                ここに将来、お知らせや<br>
-                任意の追加コンテンツを組み込むことができます。
-            </p>
-        </div>
+        <section class="books-section">
+            <div class="section-header">
+                <h2 class="section-title">新着の図書</h2>
+                <a href="#" class="more-link">新着本一覧へ ➔</a>
+            </div>
+            
+            <div class="books-grid">
+                <a href="#" class="book-card">
+                    <div class="book-cover">BOOK COVER</div>
+                    <div class="book-info">
+                        <div class="book-title">心躍るWebデザインの基本と実践テクニック</div>
+                        <div class="book-author">山田 太郎</div>
+                    </div>
+                </a>
+                <a href="#" class="book-card">
+                    <div class="book-cover">BOOK COVER</div>
+                    <div class="book-info">
+                        <div class="book-title">未来を創るプログラミング思考：論理的解決力を身につける</div>
+                        <div class="book-author">佐藤 次郎</div>
+                    </div>
+                </a>
+                <a href="#" class="book-card">
+                    <div class="book-cover">BOOK COVER</div>
+                    <div class="book-info">
+                        <div class="book-title">たのしい図書室の過ごし方</div>
+                        <div class="book-author">鈴木 花子</div>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section class="articles-section">
+            <div class="section-header">
+                <h2 class="section-title">新しい紹介記事</h2>
+                <a href="#" class="more-link">記事一覧へ ➔</a>
+            </div>
+
+            <div class="articles-list">
+                <a href="#" class="article-card">
+                    <div class="article-thumbnail">IMAGE</div>
+                    <div class="article-info">
+                        <span class="article-date">2026.06.23</span>
+                        <div class="article-title">【司書おすすめ】梅雨の季節にじっくり読みたい小説5選</div>
+                    </div>
+                </a>
+                
+                <a href="#" class="article-card">
+                    <div class="article-thumbnail">IMAGE</div>
+                    <div class="article-info">
+                        <span class="article-date">2026.06.15</span>
+                        <div class="article-title">試験勉強に役立つ！集中力を高めるための参考書の選び方</div>
+                    </div>
+                </a>
+            </div>
+        </section>
     </main>
 
 </body>
