@@ -4,7 +4,7 @@
 // ==========================================================================
 $dsn = 'mysql:host=localhost;dbname=library_app;charset=utf8mb4';
 $user = 'root';
-$password = ''; // 実際のパスワードを設定してください
+$password = ''; 
 
 try {
     $pdo = new PDO($dsn, $user, $password, [
@@ -37,11 +37,10 @@ $where_clauses = ['a.is_deleted = 0'];
 $params = [];
 
 if ($keyword !== '') {
-    // 記事タイトル、紹介本文、本のタイトルからあいまい検索
-    $where_clauses[] = '(a.title LIKE :kw1 OR a.content LIKE :kw2 OR b.title LIKE :kw3)';
+    // ★ 修正ポイント：本のタイトル（b.title）を除外し、記事タイトルと紹介本文のみを対象に
+    $where_clauses[] = '(a.title LIKE :kw1 OR a.content LIKE :kw2)';
     $params[':kw1'] = "%{$keyword}%";
     $params[':kw2'] = "%{$keyword}%";
-    $params[':kw3'] = "%{$keyword}%";
 }
 
 $where_sql = implode(' AND ', $where_clauses);
@@ -58,7 +57,7 @@ if ($total_pages > 0 && $current_page > $total_pages) {
     $current_page = $total_pages;
 }
 
-// ★ 画像URL（b.image_url）も一緒に取得するようにSQLを変更しました
+// 該当するページの紹介記事データを取得
 $offset = ($current_page - 1) * $per_page;
 $select_sql = "SELECT a.id, a.title AS article_title, a.content AS excerpt, a.created_at, b.title AS book_title, b.image_url 
                FROM articles a 
@@ -69,7 +68,7 @@ $select_sql = "SELECT a.id, a.title AS article_title, a.content AS excerpt, a.cr
 
 $stmt = $pdo->prepare($select_sql);
 
-// 特殊なパラメータは bindValue を使用
+// パラメータをバインド
 foreach ($params as $key => $val) {
     $stmt->bindValue($key, $val);
 }
@@ -215,10 +214,9 @@ $display_articles = $stmt->fetchAll();
             transform: scale(0.99);
         }
 
-        /* ★ バナー部分のスタイル調整（画像がきれいに収まるように設定） */
         .article-banner {
             width: 100%;
-            height: 160px; /* 画像が見やすいよう高さを少し広げました */
+            height: 160px;
             background-color: var(--md-sys-color-surface-variant);
             display: flex;
             align-items: center;
@@ -233,7 +231,7 @@ $display_articles = $stmt->fetchAll();
         .article-banner img {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* 縦横比を保ったまま領域いっぱいに表示 */
+            object-fit: cover;
         }
 
         .article-body {
@@ -367,7 +365,7 @@ $display_articles = $stmt->fetchAll();
 
         <div class="search-box">
             <form action="" method="GET">
-                <input type="text" name="article_keyword" class="search-input" placeholder="記事タイトルや本の名で検索..." autocomplete="off" value="<?php echo htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="text" name="article_keyword" class="search-input" placeholder="記事のタイトルや内容で検索..." autocomplete="off" value="<?php echo htmlspecialchars($keyword, ENT_QUOTES, 'UTF-8'); ?>">
             </form>
         </div>
 
@@ -375,7 +373,6 @@ $display_articles = $stmt->fetchAll();
             <?php if (!empty($display_articles)): ?>
                 <?php foreach ($display_articles as $article): ?>
                     <?php 
-                        // 日付のフォーマット変換 (Y-m-d H:i:s -> Y.m.d)
                         $date_formatted = date('Y.m.d', strtotime($article['created_at']));
                     ?>
                     <a href="detail.php?id=<?php echo $article['id']; ?>" class="article-card">
