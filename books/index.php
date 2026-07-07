@@ -33,11 +33,10 @@ if ($book_id !== '') {
 
         // 本が存在した場合のみ、紐づく紹介記事を取得
         if ($book) {
-            // 2. 紹介記事を取得 (テーブル名・カラム名は一般的な想定です)
-            // ※記事側にも削除フラグ等がある場合は WHERE 句に適宜追加してください
+            // 2. 紹介記事を取得 (is_deleted = 0 の有効なデータのみに修正)
             $article_sql = "SELECT id, title, content, DATE_FORMAT(created_at, '%Y/%m/%d') AS date 
                             FROM articles 
-                            WHERE book_id = :book_id 
+                            WHERE book_id = :book_id AND is_deleted = 0 
                             ORDER BY id DESC";
             $article_stmt = $pdo->prepare($article_sql);
             $article_stmt->bindValue(':book_id', $book_id, PDO::PARAM_INT);
