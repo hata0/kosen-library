@@ -262,7 +262,7 @@ if ($book_id !== '') {
             <div class="app-title">図書室アプリ</div>
             <nav class="app-nav">
                 <a href="../index.php" class="nav-item">ホーム</a>
-                <a href="#" class="nav-item">マイページ</a>
+                <a href="../mypage/" class="nav-item">マイページ</a>
             </nav>
         </div>
     </header>
@@ -320,7 +320,7 @@ if ($book_id !== '') {
                 <?php if (!empty($articles)): ?>
                     <div class="article-list">
                         <?php foreach ($articles as $article): ?>
-                            <a href="../articles?id=<?php echo htmlspecialchars($article['id'], ENT_QUOTES, 'UTF-8'); ?>" class="article-card">
+                            <a href="../articles/index.php?id=<?php echo htmlspecialchars($article['id'], ENT_QUOTES, 'UTF-8'); ?>" class="article-card">
                                 <h3 class="article-title"><?php echo htmlspecialchars($article['title'], ENT_QUOTES, 'UTF-8'); ?></h3>
                                 <p class="article-content"><?php echo htmlspecialchars(mb_strimwidth($article['content'], 0, 120, '...', 'UTF-8'), ENT_QUOTES, 'UTF-8'); ?></p>
                                 <div class="article-date"><?php echo htmlspecialchars($article['date'], ENT_QUOTES, 'UTF-8'); ?></div>

@@ -247,7 +247,7 @@ function h($string) {
             <section class="related-book-section">
                 <h2 class="section-title">この記事で紹介された本</h2>
                 
-                <a href="../books/?id=<?= h($article_data['book_id']) ?>" class="book-card">
+                <a href="../books/index.php?id=<?= h($article_data['book_id']) ?>" class="book-card">
                     
                     <div class="book-card-image-wrapper">
                         <?php if (!empty($article_data['image_url'])): ?>

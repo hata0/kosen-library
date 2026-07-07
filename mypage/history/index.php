@@ -193,7 +193,7 @@ function h($string) {
                         <?php foreach ($history_data as $row): ?>
                             <tr>
                                 <td>
-                                    <a href="../../book_detail.php?id=<?= h($row['book_id']) ?>" class="book-title">
+                                    <a href="../../books/index.php?id=<?= h($row['book_id']) ?>" class="book-title">
                                         <?= h($row['title']) ?>
                                     </a>
                                 </td>
