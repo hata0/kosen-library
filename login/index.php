@@ -236,12 +236,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <form class="login-form" action="" method="POST">
             <div class="input-group">
                 <label class="input-label" for="user_id">ユーザーID</label>
-                <input class="form-input" type="text" id="user_id" name="user_id" autocomplete="off" autocapitalize="none" required placeholder="例: k22000">
+                <input class="form-input" type="text" id="user_id" name="user_id" autocomplete="off" autocapitalize="none" required placeholder="">
             </div>
 
             <div class="input-group">
                 <label class="input-label" for="password">パスワード</label>
-                <input class="form-input" type="password" id="password" name="password" required placeholder="••••••••">
+                <input class="form-input" type="password" id="password" name="password" required placeholder="">
             </div>
 
             <button class="submit-button" type="submit">ログイン</button>
