@@ -375,7 +375,7 @@ $display_articles = $stmt->fetchAll();
                     <?php 
                         $date_formatted = date('Y.m.d', strtotime($article['created_at']));
                     ?>
-                    <a href="detail.php?id=<?php echo $article['id']; ?>" class="article-card">
+                    <a href="../index.php?id=<?php echo $article['id']; ?>" class="article-card">
                         
                         <div class="article-banner">
                             <?php if (!empty($article['image_url'])): ?>
