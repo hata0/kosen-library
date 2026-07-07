@@ -89,17 +89,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ':content' => $content
                 ]);
                 
-                // ★修正箇所：二重投稿防止 ＆ 投稿管理画面への自動遷移（PRGパターン）
-                // 遷移先の画面でメッセージを表示できるようにセッションに保存
+                // 二重投稿防止 ＆ 投稿管理画面への自動遷移（PRGパターン）
                 $_SESSION['success_message'] = '紹介文を投稿しました！';
-                
-                // 投稿管理画面へリダイレクトして処理を終了する
                 header('Location: ../../mypage/articles/');
                 exit;
             }
         } catch (PDOException $e) {
             $error_message = '投稿中にエラーが発生しました: ' . $e->getMessage();
         }
+    }
+}
+
+// =========================================================
+// 【初期表示用の書籍データ取得処理】（GETまたはPOSTエラー時の復元）
+// =========================================================
+$selected_book_id = '';
+$selected_book_title = '';
+
+// エラーで戻ってきた場合はPOSTから、新規アクセス時はGETからIDを取得
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['book_id'])) {
+    $selected_book_id = (int)$_POST['book_id'];
+} elseif (isset($_GET['book_id'])) {
+    $selected_book_id = (int)$_GET['book_id'];
+}
+
+// IDが存在する場合は、その本のタイトルを取得する
+if ($selected_book_id > 0) {
+    try {
+        $stmt = $pdo->prepare("SELECT title FROM books WHERE id = :id AND is_deleted = 0");
+        $stmt->execute([':id' => $selected_book_id]);
+        $book = $stmt->fetch();
+        if ($book) {
+            $selected_book_title = $book['title'];
+        } else {
+            // 本が見つからない・削除済みの場合はIDをリセット
+            $selected_book_id = '';
+        }
+    } catch (PDOException $e) {
+        $selected_book_id = '';
     }
 }
 
@@ -229,7 +256,7 @@ function h($string) {
         <?php endif; ?>
 
         <div class="card-container">
-            <form action="index.php" method="POST" id="postForm">
+            <form action="index.php<?= isset($_GET['book_id']) ? '?book_id='.h($_GET['book_id']) : '' ?>" method="POST" id="postForm">
                 
                 <div class="form-group autocomplete-container">
                     <label for="book_search" class="form-label">対象の書籍</label>
@@ -239,8 +266,9 @@ function h($string) {
                         class="input-field" 
                         placeholder="本のタイトルを入力して検索..." 
                         autocomplete="off"
+                        value="<?= h($selected_book_title) ?>"
                     >
-                    <input type="hidden" id="book_id" name="book_id" value="">
+                    <input type="hidden" id="book_id" name="book_id" value="<?= h($selected_book_id) ?>">
                     <ul id="suggest_list" class="autocomplete-list"></ul>
                 </div>
 
@@ -278,6 +306,7 @@ function h($string) {
             const submitBtn = document.getElementById('submitBtn');
             let debounceTimer;
 
+            // 最初から book_id がセットされていない場合のみボタンを無効化する
             if(hiddenBookId.value === "") {
                 submitBtn.disabled = true;
             }
@@ -285,6 +314,7 @@ function h($string) {
             searchInput.addEventListener('input', function() {
                 const keyword = this.value.trim();
                 
+                // 入力内容が変わった時点で未選択状態にする
                 hiddenBookId.value = '';
                 submitBtn.disabled = true;
 

@@ -204,7 +204,7 @@ function h($string) {
                                     <?= !empty($row['return_date']) ? h(date('Y/m/d', strtotime($row['return_date']))) : '<span style="color: #d32f2f; font-weight: bold;">未返却</span>' ?>
                                 </td>
                                 <td>
-                                    <a href="../../post_intro.php?book_id=<?= h($row['book_id']) ?>" class="btn btn-primary">
+                                    <a href="../../articles/post/index.php?book_id=<?= h($row['book_id']) ?>" class="btn btn-primary">
                                         紹介する
                                     </a>
                                 </td>
