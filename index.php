@@ -245,7 +245,6 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             border-bottom: 1px solid var(--md-sys-color-outline);
         }
         
-        /* 🌟 画像がある場合にきれいに表示するためのスタイル */
         .book-cover img {
             width: 100%;
             height: 100%;
@@ -432,7 +431,7 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
 
     <main class="main-content">
         <div class="search-container">
-            <form action="search_result.php" method="GET">
+            <form action="search/index.php" method="GET">
                 <input type="text" name="keyword" class="search-input" placeholder="本を検索する..." autocomplete="off">
             </form>
         </div>
@@ -440,7 +439,7 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
         <section class="books-section">
             <div class="section-header">
                 <h2 class="section-title">新着の図書</h2>
-                <a href="search_result.php" class="more-link">新着本一覧へ ➔</a>
+                <a href="search/index.php" class="more-link">新着本一覧へ ➔</a>
             </div>
             
             <div class="books-grid">

@@ -1,42 +1,55 @@
 <?php
+// 1. セッションの開始（ログイン状態チェック用）
+session_start();
+
 $search_keyword = '';
+$books = []; // 検索結果を格納する配列
+
 // パラメータ ?keyword= の値を取得
 if (isset($_GET['keyword']) && trim($_GET['keyword']) !== '') {
     $search_keyword = trim($_GET['keyword']);
+    
+    // 2. データベースへの接続設定（root / パスワードなし）
+    $dsn = 'mysql:host=localhost;dbname=library_app;charset=utf8mb4';
+    $db_user = 'root';
+    $db_password = '';
+
+    try {
+        $pdo = new PDO($dsn, $db_user, $db_password, [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        ]);
+
+        // 3. SQL文の作成（タイトル、著者、出版社からあいまい検索）
+        // プレースホルダー（:keyword）を使い、SQLインジェクションを完全に防ぎます
+        $sql = "SELECT * FROM books 
+                WHERE is_deleted = 0 
+                AND (title LIKE :keyword OR author LIKE :keyword OR publisher LIKE :keyword)
+                ORDER BY id DESC"; // 新しい登録順に並べる
+        
+        $stmt = $pdo->prepare($sql);
+        
+        // 部分一致検索のためにキーワードの前後を % で囲む
+        $like_keyword = '%' . $search_keyword . '%';
+        $stmt->bindValue(':keyword', $like_keyword, PDO::PARAM_STR);
+        
+        $stmt->execute();
+        $books = $stmt->fetchAll();
+
+    } catch (PDOException $e) {
+        exit('データベース接続エラー: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8'));
+    }
 }
 
-// --- 【MVP用のダミーデータ】 ---
-// 本来は $search_keyword を使ってSQL（LIKE検索など）を発行しデータベースから取得します
-$books = [
-    [
-        'id' => '1',
-        'title' => '坊っちゃん',
-        'author' => '夏目漱石',
-        'publisher' => '新潮社',
-        'year' => '1906年',
-        'ndc' => '913.6',
-        'image_url' => 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=200&q=80'
-    ],
-    [
-        'id' => '2',
-        'title' => '人間失格',
-        'author' => '太宰治',
-        'publisher' => '角川書店',
-        'year' => '1948年',
-        'ndc' => '913.6',
-        'image_url' => 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=200&q=80'
-    ],
-    [
-        'id' => '3',
-        'title' => '吾輩は猫である（エラーテスト用）',
-        'author' => '夏目漱石',
-        'publisher' => '岩波書店',
-        'year' => '1905年',
-        'ndc' => '913.6',
-        // 読込失敗テスト用：あえて存在しないURLにしています（自動的にNo Imageになります）
-        'image_url' => 'https://example.com/invalid-image-for-test.jpg'
-    ]
-];
+// 4. ログイン状態によって右上のナビゲーションの文字とリンク先を切り替える
+// ※ search/ フォルダ内にいるため、上の階層（../）を意識したパスにしています
+if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+    $nav_text = "マイページ";
+    $nav_link = "../mypage/index.php";
+} else {
+    $nav_text = "ログイン";
+    $nav_link = "../login/index.php"; 
+}
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -86,7 +99,7 @@ $books = [
         }
         .book-card {
             display: flex;
-            flex-direction: row; /* スマホ・PC共通で綺麗な横型配置 */
+            flex-direction: row; 
             text-decoration: none;
             color: inherit;
             border: 1px solid var(--md-sys-color-outline);
@@ -101,14 +114,16 @@ $books = [
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
-        /* カード内の画像ラッパー */
         .book-card-image-wrapper {
-            width: 80px; /* 一覧画面に適したコンパクトサイズ */
+            width: 80px; 
             aspect-ratio: 2 / 3;
             position: relative;
             flex-shrink: 0;
             background-color: var(--md-sys-color-surface-variant);
             border-right: 1px solid var(--md-sys-color-outline);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .book-card-image {
             width: 100%;
@@ -116,7 +131,6 @@ $books = [
             object-fit: cover;
         }
 
-        /* 画像エラー時のプレースホルダー */
         .no-image-placeholder {
             display: flex;
             width: 100%;
@@ -130,14 +144,13 @@ $books = [
             line-height: 1.2;
         }
 
-        /* カード内のテキスト詳細情報 */
         .book-card-details {
             flex: 1;
             padding: 12px 14px;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            min-width: 0; /* 長いタイトルのはみ出し防止 */
+            min-width: 0; 
         }
         .book-card-title {
             font-size: 15px;
@@ -146,7 +159,7 @@ $books = [
             margin-bottom: 4px;
             white-space: nowrap;
             overflow: hidden;
-            text-overflow: ellipsis; /* タイトルが長すぎる場合は自動で「...」にする */
+            text-overflow: ellipsis; 
         }
         .book-card-meta {
             font-size: 13px;
@@ -168,7 +181,6 @@ $books = [
             width: fit-content;
         }
 
-        /* --- PC・タブレット向けのレスポンシブ調整 --- */
         @media (min-width: 768px) {
             .header-inner { padding: 24px 24px 12px 24px; display: flex; justify-content: space-between; align-items: center; }
             .app-title { margin-bottom: 0; font-size: 24px; }
@@ -178,7 +190,6 @@ $books = [
             .result-header { font-size: 18px; margin-bottom: 24px; }
             .back-link { font-size: 15px; margin-bottom: 20px; }
 
-            /* 大画面ではカードを少し広く、見やすく */
             .book-card-list { gap: 16px; }
             .book-card-image-wrapper { width: 90px; }
             .book-card-details { padding: 16px 20px; }
@@ -194,7 +205,7 @@ $books = [
             <div class="app-title">図書室アプリ</div>
             <nav class="app-nav">
                 <a href="../index.php" class="nav-item">ホーム</a>
-                <a href="#" class="nav-item">マイページ</a>
+                <a href="<?php echo htmlspecialchars($nav_link, ENT_QUOTES, 'UTF-8'); ?>" class="nav-item"><?php echo htmlspecialchars($nav_text, ENT_QUOTES, 'UTF-8'); ?></a>
             </nav>
         </div>
     </header>
@@ -204,46 +215,50 @@ $books = [
 
         <div class="search-container" style="margin-bottom: 24px;">
             <form action="index.php" method="GET">
-                <input type="text" name="keyword" class="search-input" placeholder="Search..." autocomplete="off" value="<?php echo htmlspecialchars($search_keyword, ENT_QUOTES, 'UTF-8'); ?>">
+                <input type="text" name="keyword" class="search-input" placeholder="本を検索する..." autocomplete="off" value="<?php echo htmlspecialchars($search_keyword, ENT_QUOTES, 'UTF-8'); ?>">
             </form>
         </div>
 
         <div class="result-area" style="flex: 1; display: flex; flex-direction: column;">
             <?php if ($search_keyword !== ''): ?>
                 <div class="result-header">
-                    「<strong><?php echo htmlspecialchars($search_keyword, ENT_QUOTES, 'UTF-8'); ?></strong>」の検索結果
+                    「<strong><?php echo htmlspecialchars($search_keyword, ENT_QUOTES, 'UTF-8'); ?></strong>」の検索結果 (<?php echo count($books); ?>件)
                 </div>
                 
-                <div class="book-card-list">
-                    <?php foreach ($books as $book): ?>
-                        <a href="../books?id=<?php echo htmlspecialchars($book['id'], ENT_QUOTES, 'UTF-8'); ?>" class="book-card">
-                            
-                            <div class="book-card-image-wrapper">
-                                <?php if (!empty($book['image_url'])): ?>
-                                    <img src="<?php echo htmlspecialchars($book['image_url'], ENT_QUOTES, 'UTF-8'); ?>" 
-                                         alt="<?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?>のカバー画像" 
-                                         class="book-card-image"
-                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                <?php endif; ?>
-                                <div class="no-image-placeholder" style="display: <?php echo !empty($book['image_url']) ? 'none' : 'flex'; ?>;">
-                                    No Image
+                <?php if (!empty($books)): ?>
+                    <div class="book-card-list">
+                        <?php foreach ($books as $book): ?>
+                            <a href="../book_detail.php?id=<?php echo htmlspecialchars($book['id'], ENT_QUOTES, 'UTF-8'); ?>" class="book-card">
+                                
+                                <div class="book-card-image-wrapper">
+                                    <?php if (!empty($book['image_url']) && file_exists('../' . $book['image_url'])): ?>
+                                        <img src="<?php echo htmlspecialchars('../' . $book['image_url'], ENT_QUOTES, 'UTF-8'); ?>" 
+                                             alt="<?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?>のカバー画像" 
+                                             class="book-card-image">
+                                    <?php else: ?>
+                                        <div class="no-image-placeholder">No Image</div>
+                                    <?php endif; ?>
                                 </div>
-                            </div>
 
-                            <div class="book-card-details">
-                                <h2 class="book-card-title"><?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
-                                <div class="book-card-meta">
-                                    <?php echo htmlspecialchars($book['author'], ENT_QUOTES, 'UTF-8'); ?> / 
-                                    <?php echo htmlspecialchars($book['publisher'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo htmlspecialchars($book['year'], ENT_QUOTES, 'UTF-8'); ?>)
+                                <div class="book-card-details">
+                                    <h2 class="book-card-title"><?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?></h2>
+                                    <div class="book-card-meta">
+                                        <?php echo htmlspecialchars($book['author'], ENT_QUOTES, 'UTF-8'); ?> / 
+                                        <?php echo htmlspecialchars($book['publisher'], ENT_QUOTES, 'UTF-8'); ?> (<?php echo htmlspecialchars($book['year'], ENT_QUOTES, 'UTF-8'); ?>年)
+                                    </div>
+                                    <?php if (!empty($book['ndc'])): ?>
+                                        <div class="book-card-ndc">
+                                            NDC: <?php echo htmlspecialchars($book['ndc'], ENT_QUOTES, 'UTF-8'); ?>
+                                        </div>
+                                    <?php endif; ?>
                                 </div>
-                                <div class="book-card-ndc">
-                                    NDC: <?php echo htmlspecialchars($book['ndc'], ENT_QUOTES, 'UTF-8'); ?>
-                                </div>
-                            </div>
 
-                        </a>
-                    <?php endforeach; ?>
-                </div>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <p class="placeholder-text">一致する図書が見つかりませんでした。</p>
+                <?php endif; ?>
 
             <?php else: ?>
                 <p class="placeholder-text">検索キーワードが入力されていません。</p>
