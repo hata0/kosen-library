@@ -1,3 +1,34 @@
+<?php
+// ==========================================================================
+// 1. データベース接続設定 (必要に応じて書き換えてください)
+// ==========================================================================
+$dsn = 'mysql:host=localhost;dbname=library_app;charset=utf8mb4';
+$user = 'root';
+$password = ''; // 実際のパスワードを設定してください
+
+try {
+    $pdo = new PDO($dsn, $user, $password, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ]);
+} catch (PDOException $e) {
+    exit('データベース接続失敗: ' . $e->getMessage());
+}
+
+// ==========================================================================
+// 2. データベースからのデータ取得 (SQLクエリ)
+// ==========================================================================
+
+// ① 新着の図書を最大3件取得 (idの降順、論理削除されていないもの)
+$books_sql = "SELECT id, title, author, image_url FROM books WHERE is_deleted = 0 ORDER BY id DESC LIMIT 3";
+$books_stmt = $pdo->query($books_sql);
+$new_books = $books_stmt->fetchAll();
+
+// ② 新しい紹介記事を最大2件取得 (created_atの降順、論理削除されていないもの)
+$articles_sql = "SELECT id, title, created_at FROM articles WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT 2";
+$articles_stmt = $pdo->query($articles_sql);
+$new_articles = $articles_stmt->fetchAll();
+?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -379,71 +410,71 @@
             <div class="app-title">図書室アプリ</div>
             <nav class="app-nav">
                 <a href="#" class="nav-item active">ホーム</a>
-                <a href="#" class="nav-item">マイページ</a>
+                <a href="mypage.php" class="nav-item">マイページ</a>
             </nav>
         </div>
     </header>
 
     <main class="main-content">
         <div class="search-container">
-            <form action="search/index.php" method="GET">
-                <input type="text" name="keyword" class="search-input" placeholder="Search..." autocomplete="off">
+            <form action="search_result.php" method="GET">
+                <input type="text" name="keyword" class="search-input" placeholder="本を検索..." autocomplete="off">
             </form>
         </div>
 
         <section class="books-section">
             <div class="section-header">
                 <h2 class="section-title">新着の図書</h2>
-                <a href="#" class="more-link">新着本一覧へ ➔</a>
+                <a href="books_list.php" class="more-link">新着本一覧へ ➔</a>
             </div>
             
             <div class="books-grid">
-                <a href="#" class="book-card">
-                    <div class="book-cover">BOOK COVER</div>
-                    <div class="book-info">
-                        <div class="book-title">心躍るWebデザインの基本と実践テクニック</div>
-                        <div class="book-author">山田 太郎</div>
-                    </div>
-                </a>
-                <a href="#" class="book-card">
-                    <div class="book-cover">BOOK COVER</div>
-                    <div class="book-info">
-                        <div class="book-title">未来を創るプログラミング思考：論理的解決力を身につける</div>
-                        <div class="book-author">佐藤 次郎</div>
-                    </div>
-                </a>
-                <a href="#" class="book-card">
-                    <div class="book-cover">BOOK COVER</div>
-                    <div class="book-info">
-                        <div class="book-title">たのしい図書室の過ごし方</div>
-                        <div class="book-author">鈴木 花子</div>
-                    </div>
-                </a>
+                <?php if (!empty($new_books)): ?>
+                    <?php foreach ($books_stmt as $book): ?>
+                        <a href="book_detail.php?id=<?php echo $book['id']; ?>" class="book-card">
+                            <div class="book-cover">
+                                <?php if (!empty($book['image_url'])): ?>
+                                    <img src="<?php echo htmlspecialchars($book['image_url'], ENT_QUOTES, 'UTF-8'); ?>" alt="表紙" style="width:100%; height:100%; object-fit:cover;">
+                                <?php else: ?>
+                                    NO COVER
+                                <?php endif; ?>
+                            </div>
+                            <div class="book-info">
+                                <div class="book-title"><?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?></div>
+                                <div class="book-author"><?php echo htmlspecialchars($book['author'], ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p style="color: var(--md-sys-color-on-surface-variant); font-size: 13px; padding: 10px 0;">新着図書はありません。</p>
+                <?php endif; ?>
             </div>
         </section>
 
         <section class="articles-section">
             <div class="section-header">
                 <h2 class="section-title">新しい紹介記事</h2>
-                <a href="#" class="more-link">記事一覧へ ➔</a>
+                <a href="articles.php" class="more-link">記事一覧へ ➔</a>
             </div>
 
             <div class="articles-list">
-                <a href="#" class="article-card">
-                    <div class="article-thumbnail">IMAGE</div>
-                    <div class="article-info">
-                        <span class="article-date">2026.06.23</span>
-                        <div class="article-title">【司書おすすめ】梅雨の季節にじっくり読みたい小説5選</div>
-                    </div>
-                </a>
-                
-                <a href="#" class="article-card">
-                    <div class="article-thumbnail">IMAGE</div>
-                    <div class="article-info">
-                        <span class="article-date">2026.06.15</span>
-                        <div class="article-title">試験勉強に役立つ！集中力を高めるための参考書の選び方</div>
-                    </div>
-                </a>
+                <?php if (!empty($new_articles)): ?>
+                    <?php foreach ($new_articles as $article): ?>
+                        <?php 
+                            // 日付フォーマット変換
+                            $date_formatted = date('Y.m.d', strtotime($article['created_at']));
+                        ?>
+                        <a href="detail.php?id=<?php echo $article['id']; ?>" class="article-card">
+                            <div class="article-thumbnail">IMAGE</div>
+                            <div class="article-info">
+                                <span class="article-date"><?php echo $date_formatted; ?></span>
+                                <div class="article-title"><?php echo htmlspecialchars($article['title'], ENT_QUOTES, 'UTF-8'); ?></div>
+                            </div>
+                        </a>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <p style="color: var(--md-sys-color-on-surface-variant); font-size: 13px; padding: 10px 0;">新しい紹介記事はありません。</p>
+                <?php endif; ?>
             </div>
         </section>
     </main>
