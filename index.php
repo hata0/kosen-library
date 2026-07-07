@@ -439,12 +439,12 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
         <section class="books-section">
             <div class="section-header">
                 <h2 class="section-title">新着の図書</h2>
-                <a href="search/index.php" class="more-link">新着本一覧へ ➔</a>
+                <a href="books/list/index.php" class="more-link">新着本一覧へ ➔</a>
             </div>
             
             <div class="books-grid">
                 <?php foreach ($new_books as $book): ?>
-                    <a href="book_detail.php?id=<?php echo $book['id']; ?>" class="book-card">
+                    <a href="books/index.php?id=<?php echo $book['id']; ?>" class="book-card">
                         <div class="book-cover">
                             <?php if (!empty($book['image_url']) && file_exists($book['image_url'])): ?>
                                 <img src="<?php echo htmlspecialchars($book['image_url'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?>">
@@ -468,12 +468,12 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
         <section class="articles-section">
             <div class="section-header">
                 <h2 class="section-title">新しい紹介記事</h2>
-                <a href="article_list.php" class="more-link">記事一覧へ ➔</a>
+                <a href="articles/list/index.php" class="more-link">記事一覧へ ➔</a>
             </div>
 
             <div class="articles-list">
                 <?php foreach ($new_articles as $article): ?>
-                    <a href="article_detail.php?id=<?php echo $article['id']; ?>" class="article-card">
+                    <a href="articles/index.php?id=<?php echo $article['id']; ?>" class="article-card">
                         <div class="article-thumbnail">📄 ARTICLE</div>
                         <div class="article-info">
                             <span class="article-date"><?php echo date('Y.m.d', strtotime($article['created_at'])); ?></span>
