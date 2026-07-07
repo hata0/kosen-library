@@ -77,7 +77,8 @@ INSERT INTO books (id, title, author, publisher, year, ndc, is_deleted, image_ur
 (1, 'AI入門', '山田太郎', '技術創出出版', 2024, '007', 0, 'http://localhost/kosen-library/picture_collection/IMG_4163.jpeg'),
 (2, 'Python実践開発', '佐藤次郎', 'システムノート社', 2025, '007', 0, 'http://localhost/kosen-library/picture_collection/IMG_4183.jpeg'),
 (3, 'こころ', '夏目漱石', '青空文庫選書', 2010, '913', 0, 'images/covers/kokoro.png'),
-(4, 'デザインの教科書', 'デザイン研究会', 'クリエイティブ・ラボ', 2023, '727', 0, 'images/covers/design_textbook.png');
+(4, 'デザインの教科書', 'デザイン研究会', 'クリエイティブ・ラボ', 2023, '727', 0, 'images/covers/design_textbook.png'),
+(5, '留年回避の心得', '平野雄太郎', '北九州高専', 2026, '007', 0, 'http://localhost/kosen-library/picture_collection/IMG_4186.jpeg');
 
 -- 3. articles データ
 INSERT INTO articles (id, user_id, book_id, title, content, is_deleted, created_at) VALUES
