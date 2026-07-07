@@ -1,3 +1,42 @@
+<?php
+// 1. セッションの開始（ログイン状態をチェックするために必須）
+session_start();
+
+// 2. データベースへの接続設定（root / パスワードなし）
+$dsn = 'mysql:host=localhost;dbname=library_app;charset=utf8mb4';
+$db_user = 'root';
+$db_password = '';
+
+try {
+    $pdo = new PDO($dsn, $db_user, $db_password, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+    ]);
+
+    // 3. 新着の図書を最新順に3件取得（is_deleted = 0 の有効なデータのみ）
+    // ※ id の大きい順（DESC）で並べることで新着順にしています
+    $books_stmt = $pdo->query("SELECT * FROM books WHERE is_deleted = 0 ORDER BY id DESC LIMIT 3");
+    $new_books = $books_stmt->fetchAll();
+
+    // 4. 新しい紹介記事を最新順に2件取得（is_deleted = 0 の有効なデータのみ）
+    // ※ created_at の新しい順（DESC）にしています
+    $articles_stmt = $pdo->query("SELECT * FROM articles WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT 2");
+    $new_articles = $articles_stmt->fetchAll();
+
+} catch (PDOException $e) {
+    // 万が一接続できない場合はエラーを表示
+    exit('データベース接続エラー: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8'));
+}
+
+// 5. ログイン状態によって右上のナビゲーションの文字とリンク先を切り替える
+if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
+    $nav_text = "マイページ";
+    $nav_link = "mypage/index.php";
+} else {
+    $nav_text = "ログイン";
+    $nav_link = "login/index.php";
+}
+?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -5,7 +44,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>図書室アプリ - ホーム</title>
     <style>
-        /* --- デザインシステム（Material Design 3 ベース） --- */
+        /* --- デザインシステム（元のコードを100%完全維持） --- */
         :root {
             --md-sys-color-primary: #1a73e8;
             --md-sys-color-background: #ffffff;
@@ -14,7 +53,7 @@
             --md-sys-color-on-surface: #1f1f1f;
             --md-sys-color-on-surface-variant: #5f6368;
             --md-sys-color-outline: #e0e0e0;
-            --max-content-width: 760px; /* PC・タブレットでのコンテンツ最大幅 */
+            --max-content-width: 760px;
         }
 
         * {
@@ -93,7 +132,7 @@
             width: 100%;
             max-width: var(--max-content-width);
             margin: 0 auto;
-            padding: 24px 0 40px 0; /* 下部に程よい余白を持たせる */
+            padding: 24px 0 40px 0;
             display: flex;
             flex-direction: column;
             gap: 32px;
@@ -204,6 +243,13 @@
             font-size: 12px;
             font-weight: bold;
             border-bottom: 1px solid var(--md-sys-color-outline);
+        }
+        
+        /* 🌟 画像がある場合にきれいに表示するためのスタイル */
+        .book-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .book-info {
@@ -379,71 +425,67 @@
             <div class="app-title">図書室アプリ</div>
             <nav class="app-nav">
                 <a href="#" class="nav-item active">ホーム</a>
-                <a href="#" class="nav-item">マイページ</a>
+                <a href="<?php echo htmlspecialchars($nav_link, ENT_QUOTES, 'UTF-8'); ?>" class="nav-item"><?php echo htmlspecialchars($nav_text, ENT_QUOTES, 'UTF-8'); ?></a>
             </nav>
         </div>
     </header>
 
     <main class="main-content">
         <div class="search-container">
-            <form action="search/index.php" method="GET">
-                <input type="text" name="keyword" class="search-input" placeholder="Search..." autocomplete="off">
+            <form action="search_result.php" method="GET">
+                <input type="text" name="keyword" class="search-input" placeholder="本を検索する..." autocomplete="off">
             </form>
         </div>
 
         <section class="books-section">
             <div class="section-header">
                 <h2 class="section-title">新着の図書</h2>
-                <a href="#" class="more-link">新着本一覧へ ➔</a>
+                <a href="search_result.php" class="more-link">新着本一覧へ ➔</a>
             </div>
             
             <div class="books-grid">
-                <a href="#" class="book-card">
-                    <div class="book-cover">BOOK COVER</div>
-                    <div class="book-info">
-                        <div class="book-title">心躍るWebデザインの基本と実践テクニック</div>
-                        <div class="book-author">山田 太郎</div>
-                    </div>
-                </a>
-                <a href="#" class="book-card">
-                    <div class="book-cover">BOOK COVER</div>
-                    <div class="book-info">
-                        <div class="book-title">未来を創るプログラミング思考：論理的解決力を身につける</div>
-                        <div class="book-author">佐藤 次郎</div>
-                    </div>
-                </a>
-                <a href="#" class="book-card">
-                    <div class="book-cover">BOOK COVER</div>
-                    <div class="book-info">
-                        <div class="book-title">たのしい図書室の過ごし方</div>
-                        <div class="book-author">鈴木 花子</div>
-                    </div>
-                </a>
+                <?php foreach ($new_books as $book): ?>
+                    <a href="book_detail.php?id=<?php echo $book['id']; ?>" class="book-card">
+                        <div class="book-cover">
+                            <?php if (!empty($book['image_url']) && file_exists($book['image_url'])): ?>
+                                <img src="<?php echo htmlspecialchars($book['image_url'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?>">
+                            <?php else: ?>
+                                NO IMAGE
+                            <?php endif; ?>
+                        </div>
+                        <div class="book-info">
+                            <div class="book-title"><?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?></div>
+                            <div class="book-author"><?php echo htmlspecialchars($book['author'], ENT_QUOTES, 'UTF-8'); ?></div>
+                        </div>
+                    </a>
+                <?php endforeach; ?>
+                
+                <?php if (empty($new_books)): ?>
+                    <p style="padding: 0 20px; color: var(--md-sys-color-on-surface-variant);">現在新着の図書はありません。</p>
+                <?php endif; ?>
             </div>
         </section>
 
         <section class="articles-section">
             <div class="section-header">
                 <h2 class="section-title">新しい紹介記事</h2>
-                <a href="#" class="more-link">記事一覧へ ➔</a>
+                <a href="article_list.php" class="more-link">記事一覧へ ➔</a>
             </div>
 
             <div class="articles-list">
-                <a href="#" class="article-card">
-                    <div class="article-thumbnail">IMAGE</div>
-                    <div class="article-info">
-                        <span class="article-date">2026.06.23</span>
-                        <div class="article-title">【司書おすすめ】梅雨の季節にじっくり読みたい小説5選</div>
-                    </div>
-                </a>
-                
-                <a href="#" class="article-card">
-                    <div class="article-thumbnail">IMAGE</div>
-                    <div class="article-info">
-                        <span class="article-date">2026.06.15</span>
-                        <div class="article-title">試験勉強に役立つ！集中力を高めるための参考書の選び方</div>
-                    </div>
-                </a>
+                <?php foreach ($new_articles as $article): ?>
+                    <a href="article_detail.php?id=<?php echo $article['id']; ?>" class="article-card">
+                        <div class="article-thumbnail">📄 ARTICLE</div>
+                        <div class="article-info">
+                            <span class="article-date"><?php echo date('Y.m.d', strtotime($article['created_at'])); ?></span>
+                            <div class="article-title"><?php echo htmlspecialchars($article['title'], ENT_QUOTES, 'UTF-8'); ?></div>
+                        </div>
+                    </a>
+                <?php endforeach; ?>
+
+                <?php if (empty($new_articles)): ?>
+                    <p style="color: var(--md-sys-color-on-surface-variant);">現在紹介記事はありません。</p>
+                <?php endif; ?>
             </div>
         </section>
     </main>
