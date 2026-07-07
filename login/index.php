@@ -37,8 +37,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($user && $input_password === $user['password']) {
                 
                 // 【ログイン成功】セッションにユーザー情報を記録
-                $_SESSION['user_id'] = $user['student_id'];
-                $_SESSION['user_name'] = $user['name']; // 他の画面で「こんにちは、〇〇さん」と出すために保持
+                // ★修正箇所：DBのリレーションで使う「連番のid(1, 2...)」をuser_idとして保存する
+                $_SESSION['user_id'] = $user['id']; 
+                
+                // マイページなどでの画面表示用に、学籍番号も別の名前で保持しておくと便利です
+                $_SESSION['student_id'] = $user['student_id']; 
+                $_SESSION['user_name'] = $user['name'];
                 $_SESSION['logged_in'] = true;
 
                 // ホーム画面（index.php）に自動で移動
