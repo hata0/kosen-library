@@ -352,7 +352,7 @@ $display_articles = $stmt->fetchAll();
 
     <header class="app-header">
         <div class="header-inner">
-            <a href="oregatukutta_HomePage.php" class="back-button">❮</a>
+            <a href="../../index.php" class="back-button">❮</a>
             <div class="app-title">図書室アプリ</div>
         </div>
     </header>
