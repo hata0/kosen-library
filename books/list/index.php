@@ -1,45 +1,34 @@
 <?php
-// --- 【MVP用のダミーデータ】 ---
-// 本来はデータベース（booksテーブル）から全件取得、またはページネーション（LIMIT/OFFSET）で取得します
-$books = [
-    [
-        'id' => '1',
-        'title' => '坊っちゃん',
-        'author' => '夏目漱石',
-        'publisher' => '新潮社',
-        'year' => '1906年',
-        'ndc' => '913.6',
-        'image_url' => 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?auto=format&fit=crop&w=200&q=80'
-    ],
-    [
-        'id' => '2',
-        'title' => '人間失格',
-        'author' => '太宰治',
-        'publisher' => '角川書店',
-        'year' => '1948年',
-        'ndc' => '913.6',
-        'image_url' => 'https://images.unsplash.com/photo-1512820790803-83ca734da794?auto=format&fit=crop&w=200&q=80'
-    ],
-    [
-        'id' => '4',
-        'title' => '基本情報技術者 合格教本',
-        'author' => '高橋二郎',
-        'publisher' => '技術評論社',
-        'year' => '2025年',
-        'ndc' => '007.6',
-        'image_url' => 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=200&q=80'
-    ],
-    [
-        'id' => '5',
-        'title' => 'UI/UXデザインの基本',
-        'author' => '佐藤花子',
-        'publisher' => 'デザイン出版',
-        'year' => '2024年',
-        'ndc' => '548.2',
-        // 画像なしテスト用
-        'image_url' => ''
-    ]
-];
+$db_host = 'localhost';         // ホスト名 (例: localhost, 127.0.0.1)
+$db_name = 'library_app';// データベース名
+$db_user = 'root';     // ユーザー名
+$db_pass = '';     // パスワード
+
+$dsn = "mysql:host={$db_host};dbname={$db_name};charset=utf8mb4";
+
+try {
+    // PDOインスタンスの生成
+    $pdo = new PDO($dsn, $db_user, $db_pass, [
+        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // エラー発生時に例外を投げる
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // 連想配列としてフェッチ
+        PDO::ATTR_EMULATE_PREPARES => false, // 静的プレースホルダを使用
+    ]);
+
+    // --- 【データ取得処理】 ---
+    // is_deleted = 0 (有効なデータ) のみを取得。必要に応じて ORDER BY や LIMIT を追加してください。
+    $sql = "SELECT id, title, author, publisher, year, ndc, image_url 
+            FROM books 
+            WHERE is_deleted = 0 
+            ORDER BY id DESC";
+    
+    $stmt = $pdo->query($sql);
+    $books = $stmt->fetchAll();
+
+} catch (PDOException $e) {
+    // データベース接続やクエリ実行に失敗した場合の処理
+    // ※本番環境ではエラー内容を画面に直接出力せず、ログに記録することをお勧めします
+    exit('データベースエラー: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8'));
+}
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -138,8 +127,8 @@ $books = [
                     
                     <div class="book-card-image-wrapper">
                         <?php if (!empty($book['image_url'])): ?>
-                            <img src="<?php echo htmlspecialchars($book['image_url'], ENT_QUOTES, 'UTF-8'); ?>" 
-                                 alt="<?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?>のカバー画像" 
+                            <img src="<?php echo htmlspecialchars($book['image_url'], ENT_QUOTES, 'UTF-8'); ?>"
+                                 alt="<?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?>のカバー画像"
                                  class="book-card-image"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                         <?php endif; ?>
