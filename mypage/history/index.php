@@ -2,32 +2,69 @@
 // セッションの開始
 session_start();
 
-// DB接続の代わりに、ダミーの貸出履歴データを用意
-// （設計書の画面設計プロトタイプに近いデータ構成にしています）
-$history_data = [
-    [
-        'book_id' => 1,
-        'title' => 'AI入門を読んでみた',
-        'loan_date' => '2023-05-10',
-        'return_date' => '2023-05-24'
-    ],
-    [
-        'book_id' => 2,
-        'title' => '面白かった小説紹介',
-        'loan_date' => '2023-04-15',
-        'return_date' => '2023-04-29'
-    ],
-    [
-        'book_id' => 3,
-        'title' => '実践ネットワーク工学',
-        'loan_date' => '2024-05-01',
-        'return_date' => null // 未返却パターンのテスト用
-    ]
-];
+// データベース接続設定
+$db_host = 'localhost';
+$db_name = 'library_app'; // sql.txtで定義されたデータベース名
+$db_user = 'root';        // ご自身の環境に合わせて変更してください
+$db_pass = '';            // ご自身の環境に合わせて変更してください
+
+$history_data = [];
+$error_message = '';
+
+try {
+    // PDOによるデータベース接続
+    $dsn = "mysql:host={$db_host};dbname={$db_name};charset=utf8mb4";
+    $options = [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES   => false,
+    ];
+    $pdo = new PDO($dsn, $db_user, $db_pass, $options);
+
+    // =========================================================
+    // 【認証のシミュレーション】
+    // 本来はログイン時に $_SESSION['user_id'] がセットされます。
+    // sql.txtの初期データに合わせて、ID:1（テスト太郎）でテストします。
+    // =========================================================
+    if (!isset($_SESSION['user_id'])) {
+        $_SESSION['user_id'] = 1; 
+    }
+    $current_user_id = $_SESSION['user_id'];
+
+    // ---------------------------------------------------------
+    // 取得（SELECT）処理：borrow_records と books を結合して履歴を取得
+    // ---------------------------------------------------------
+    $sql = "
+        SELECT 
+            br.book_id,
+            b.title,
+            br.loan_date,
+            br.return_date
+        FROM 
+            borrow_records br
+        JOIN 
+            books b ON br.book_id = b.id
+        WHERE 
+            br.user_id = :user_id
+        ORDER BY 
+            br.loan_date DESC
+    ";
+
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindValue(':user_id', $current_user_id, PDO::PARAM_INT);
+    $stmt->execute();
+    
+    // 取得したデータを配列に格納
+    $history_data = $stmt->fetchAll();
+
+} catch (PDOException $e) {
+    // エラー時の処理
+    $error_message = 'データベース接続またはデータ取得エラー: ' . $e->getMessage();
+}
 
 // XSS対策用関数
 function h($string) {
-    return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars((string)$string, ENT_QUOTES, 'UTF-8');
 }
 ?>
 <!DOCTYPE html>
@@ -81,6 +118,12 @@ function h($string) {
         .back-link:hover { color: var(--md-sys-color-primary); }
         .page-title { font-size: 22px; font-weight: 700; }
 
+        /* アラート */
+        .alert-error {
+            padding: 16px; background-color: #fdeded; color: #d32f2f;
+            border-radius: 8px; font-size: 14px; font-weight: 500;
+        }
+
         /* テーブル */
         .table-container {
             width: 100%; overflow-x: auto; background-color: var(--md-sys-color-surface);
@@ -129,7 +172,9 @@ function h($string) {
         
         <h1 class="page-title">貸出履歴</h1>
 
-        <?php if (empty($history_data)): ?>
+        <?php if ($error_message): ?>
+            <div class="alert-error"><?= h($error_message) ?></div>
+        <?php elseif (empty($history_data)): ?>
             <div style="text-align: center; padding: 40px; border: 1px dashed #e0e0e0; border-radius: 12px; color: #5f6368;">
                 現在、貸出履歴はありません。
             </div>
