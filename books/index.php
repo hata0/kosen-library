@@ -314,7 +314,7 @@ if ($book_id !== '') {
             <section class="articles-section">
                 <div class="section-header">
                     <h2 class="section-title">紹介記事</h2>
-                    <a href="../article/post.php?book_id=<?php echo htmlspecialchars($book_id, ENT_QUOTES, 'UTF-8'); ?>" class="btn-post">記事を投稿する</a>
+                    <a href="../articles/post/index.php?book_id=<?php echo htmlspecialchars($book_id, ENT_QUOTES, 'UTF-8'); ?>" class="btn-post">記事を投稿する</a>
                 </div>
 
                 <?php if (!empty($articles)): ?>
