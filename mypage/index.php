@@ -1,27 +1,76 @@
 <?php
-// セッションの開始（変更した名前を一時的に保持するため）
+// セッションの開始
 session_start();
 
-// 初期値の設定（セッションに未登録の場合のみ初期値をセット）
-if (!isset($_SESSION['user_id_code'])) {
-    $_SESSION['user_id_code'] = 'k22022ti';
-}
-if (!isset($_SESSION['user_name'])) {
-    $_SESSION['user_name'] = '名無し';
-}
+// データベース接続設定
+$db_host = 'localhost';
+$db_name = 'library_app'; // sql.txtで定義されたデータベース名
+$db_user = 'root';        // ご自身の環境に合わせて変更してください
+$db_pass = '';            // ご自身の環境に合わせて変更してください
 
-// 保存ボタンが押されたときの処理
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'save') {
-    if (isset($_POST['user_name'])) {
-        // 空白文字のみの入力を防ぐため、トリムして空でなければ更新
-        $input_name = trim($_POST['user_name']);
-        if ($input_name !== '') {
-            $_SESSION['user_name'] = $input_name;
-        }
+$error_message = '';
+$display_user_id = '不明';
+$display_user_name = '不明';
+
+try {
+    // PDOによるデータベース接続
+    $dsn = "mysql:host={$db_host};dbname={$db_name};charset=utf8mb4";
+    $options = [
+        PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
+        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+        PDO::ATTR_EMULATE_PREPARES   => false,
+    ];
+    $pdo = new PDO($dsn, $db_user, $db_pass, $options);
+
+    // =========================================================
+    // 【認証のシミュレーション】
+    // 本来はログイン時に $_SESSION['user_id'] がセットされます。
+    // 今回は sql.txt にある ID:1 (テスト太郎 / k22000) でログインしている想定とします。
+    // =========================================================
+    if (!isset($_SESSION['user_id'])) {
+        $_SESSION['user_id'] = 1; 
     }
-    // フォームの再送信（更新ボタン連打による不具合）を防ぐために自分自身にリダイレクト
-    header('Location: ' . $_SERVER['PHP_SELF']);
-    exit;
+    $current_user_id = $_SESSION['user_id'];
+
+    // ---------------------------------------------------------
+    // 1. 保存（UPDATE）処理：フォームから送信された場合
+    // ---------------------------------------------------------
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'save') {
+        if (isset($_POST['user_name'])) {
+            // 空白文字のみの入力を防ぐためトリム
+            $input_name = trim($_POST['user_name']);
+            if ($input_name !== '') {
+                // DBのユーザー名(name)を更新
+                $update_sql = "UPDATE users SET name = :name WHERE id = :id AND is_deleted = 0";
+                $stmt = $pdo->prepare($update_sql);
+                $stmt->execute([
+                    ':name' => $input_name,
+                    ':id'   => $current_user_id
+                ]);
+            }
+        }
+        // フォームの再送信を防ぐために自分自身にリダイレクト
+        header('Location: ' . $_SERVER['PHP_SELF']);
+        exit;
+    }
+
+    // ---------------------------------------------------------
+    // 2. 取得（SELECT）処理：現在のユーザー情報をDBから読み込む
+    // ---------------------------------------------------------
+    $select_sql = "SELECT student_id, name FROM users WHERE id = :id AND is_deleted = 0";
+    $stmt = $pdo->prepare($select_sql);
+    $stmt->execute([':id' => $current_user_id]);
+    $user_data = $stmt->fetch();
+
+    if ($user_data) {
+        $display_user_id = $user_data['student_id']; // student_idをユーザーIDとして表示
+        $display_user_name = $user_data['name'];     // nameをユーザー名として表示
+    } else {
+        $error_message = 'ユーザー情報が見つかりません。';
+    }
+
+} catch (PDOException $e) {
+    $error_message = 'データベース接続エラー: ' . $e->getMessage();
 }
 
 // URLのパラメータ（?mode=edit）を見て、編集モードかどうかを判定
@@ -29,7 +78,7 @@ $is_edit_mode = isset($_GET['mode']) && $_GET['mode'] === 'edit';
 
 // XSS対策用関数
 function h($string) {
-    return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
+    return htmlspecialchars((string)$string, ENT_QUOTES, 'UTF-8');
 }
 ?>
 <!DOCTYPE html>
@@ -90,6 +139,12 @@ function h($string) {
         }
         .page-title { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
 
+        /* アラート */
+        .alert-error {
+            padding: 16px; background-color: #fdeded; color: #d32f2f;
+            border-radius: 8px; font-size: 14px; font-weight: 500;
+        }
+
         /* プロフィールカード */
         .profile-card {
             background-color: var(--md-sys-color-surface-variant); border-radius: 16px;
@@ -104,7 +159,7 @@ function h($string) {
         .info-label { font-size: 13px; color: var(--md-sys-color-on-surface-variant); font-weight: 500; }
         .info-value { font-size: 16px; font-weight: 700; }
 
-        /* 入力フォームのスタイル（マテリアルデザインベース） */
+        /* 入力フォームのスタイル */
         .input-text {
             width: 100%; max-width: 320px; padding: 10px 14px; font-size: 15px;
             color: var(--md-sys-color-on-surface); background-color: #ffffff;
@@ -168,22 +223,26 @@ function h($string) {
     <main class="main-content">
         <h1 class="page-title">マイページ</h1>
 
+        <?php if ($error_message): ?>
+            <div class="alert-error"><?= h($error_message) ?></div>
+        <?php endif; ?>
+
         <div class="profile-card">
             <div class="section-title">ユーザー情報</div>
             
-            <?php if ($is_edit_mode): ?>
+            <?php if ($is_edit_mode && empty($error_message)): ?>
                 <form action="" method="POST">
                     <input type="hidden" name="action" value="save">
                     <div class="profile-info">
                         <div class="info-row">
                             <span class="info-label">ユーザーID</span>
                             <span class="info-value" style="color: var(--md-sys-color-on-surface-variant);">
-                                <?= h($_SESSION['user_id_code']) ?> (変更不可)
+                                <?= h($display_user_id) ?> (変更不可)
                             </span>
                         </div>
                         <div class="info-row">
                             <label for="user_name" class="info-label">ユーザー名</label>
-                            <input type="text" id="user_name" name="user_name" class="input-text" value="<?= h($_SESSION['user_name']) ?>" required autocomplete="off">
+                            <input type="text" id="user_name" name="user_name" class="input-text" value="<?= h($display_user_name) ?>" required autocomplete="off">
                         </div>
                         <div class="profile-actions">
                             <button type="submit" class="btn btn-primary">保存する</button>
@@ -195,11 +254,11 @@ function h($string) {
                 <div class="profile-info">
                     <div class="info-row">
                         <span class="info-label">ユーザーID</span>
-                        <span class="info-value"><?= h($_SESSION['user_id_code']) ?></span>
+                        <span class="info-value"><?= h($display_user_id) ?></span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">ユーザー名</span>
-                        <span class="info-value"><?= h($_SESSION['user_name']) ?></span>
+                        <span class="info-value"><?= h($display_user_name) ?></span>
                     </div>
                     <div class="profile-actions">
                         <a href="?mode=edit" class="btn btn-outline">編集する</a>
