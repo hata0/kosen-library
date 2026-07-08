@@ -14,13 +14,19 @@ try {
     ]);
 
     // 3. 新着の図書を最新順に3件取得（is_deleted = 0 の有効なデータのみ）
-    // ※ id の大きい順（DESC）で並べることで新着順にしています
     $books_stmt = $pdo->query("SELECT * FROM books WHERE is_deleted = 0 ORDER BY id DESC LIMIT 3");
     $new_books = $books_stmt->fetchAll();
 
-    // 4. 新しい紹介記事を最新順に2件取得（is_deleted = 0 の有効なデータのみ）
-    // ※ created_at の新しい順（DESC）にしています
-    $articles_stmt = $pdo->query("SELECT * FROM articles WHERE is_deleted = 0 ORDER BY created_at DESC LIMIT 2");
+    // 4. 新しい紹介記事を最新順に2件取得（booksテーブルと結合して本の画像URLも取得）
+    // ※ articles.book_id と books.id で結合しています。環境に合わせてカラム名は調整してください。
+    $articles_stmt = $pdo->query("
+        SELECT a.*, b.image_url AS book_image_url 
+        FROM articles AS a
+        LEFT JOIN books AS b ON a.book_id = b.id
+        WHERE a.is_deleted = 0 
+        ORDER BY a.created_at DESC 
+        LIMIT 2
+    ");
     $new_articles = $articles_stmt->fetchAll();
 
 } catch (PDOException $e) {
@@ -315,6 +321,14 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             font-size: 11px;
             font-weight: bold;
             border-right: 1px solid var(--md-sys-color-outline);
+            overflow: hidden; /* 画像がはみ出さないように追加 */
+        }
+
+        /* 記事のサムネイル画像用スタイルを追加 */
+        .article-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .article-info {
@@ -446,8 +460,10 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
                 <?php foreach ($new_books as $book): ?>
                     <a href="books/index.php?id=<?php echo $book['id']; ?>" class="book-card">
                         <div class="book-cover">
-                            <?php if (!empty($book['image_url']) && file_exists($book['image_url'])): ?>
-                                <img src="<?php echo htmlspecialchars($book['image_url'], ENT_QUOTES, 'UTF-8'); ?>" alt="<?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?>">
+                            <?php if (!empty($book['image_url'])): ?>
+                                <img src="<?php echo htmlspecialchars($book['image_url'], ENT_QUOTES, 'UTF-8'); ?>" 
+                                     alt="<?php echo htmlspecialchars($book['title'], ENT_QUOTES, 'UTF-8'); ?>"
+                                     onerror="this.onerror=null; this.parentNode.innerHTML='NO IMAGE';">
                             <?php else: ?>
                                 NO IMAGE
                             <?php endif; ?>
@@ -474,7 +490,15 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             <div class="articles-list">
                 <?php foreach ($new_articles as $article): ?>
                     <a href="articles/index.php?id=<?php echo $article['id']; ?>" class="article-card">
-                        <div class="article-thumbnail">📄 ARTICLE</div>
+                        <div class="article-thumbnail">
+                            <?php if (!empty($article['book_image_url'])): ?>
+                                <img src="<?php echo htmlspecialchars($article['book_image_url'], ENT_QUOTES, 'UTF-8'); ?>" 
+                                     alt="記事の画像"
+                                     onerror="this.onerror=null; this.parentNode.innerHTML='NO IMAGE';">
+                            <?php else: ?>
+                                NO IMAGE
+                            <?php endif; ?>
+                        </div>
                         <div class="article-info">
                             <span class="article-date"><?php echo date('Y.m.d', strtotime($article['created_at'])); ?></span>
                             <div class="article-title"><?php echo htmlspecialchars($article['title'], ENT_QUOTES, 'UTF-8'); ?></div>
