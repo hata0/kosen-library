@@ -171,6 +171,56 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             box-shadow: 0 1px 6px rgba(32, 33, 36, 0.1);
         }
 
+        /* --- AI司書バナー --- */
+        .ai-banner-container {
+            padding: 0 20px;
+        }
+
+        .ai-banner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #e8f0fe 0%, #d2e3fc 100%);
+            border: 1px solid #cce0ff;
+            border-radius: 16px;
+            padding: 20px;
+            text-decoration: none;
+            color: var(--md-sys-color-on-surface);
+            box-shadow: 0 2px 4px rgba(26, 115, 232, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .ai-banner:active {
+            transform: scale(0.98);
+            box-shadow: none;
+        }
+
+        .ai-banner-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .ai-banner-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--md-sys-color-primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ai-banner-desc {
+            font-size: 13px;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+
+        .ai-banner-icon {
+            font-size: 20px;
+            color: var(--md-sys-color-primary);
+            font-weight: bold;
+        }
+
         /* --- セクション共通の見出し部分 --- */
         .section-header {
             display: flex;
@@ -321,10 +371,9 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             font-size: 11px;
             font-weight: bold;
             border-right: 1px solid var(--md-sys-color-outline);
-            overflow: hidden; /* 画像がはみ出さないように追加 */
+            overflow: hidden;
         }
 
-        /* 記事のサムネイル画像用スタイルを追加 */
         .article-thumbnail img {
             width: 100%;
             height: 100%;
@@ -386,7 +435,7 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
                 gap: 40px;
             }
 
-            .search-container, .section-header, .articles-list {
+            .search-container, .ai-banner-container, .section-header, .articles-list {
                 padding: 0;
                 margin: 0;
             }
@@ -394,6 +443,15 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             .search-input {
                 padding: 16px 28px;
                 font-size: 17px;
+            }
+
+            .ai-banner {
+                padding: 24px 32px;
+            }
+
+            .ai-banner:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(26, 115, 232, 0.15);
             }
 
             .books-grid {
@@ -448,6 +506,16 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             <form action="search/index.php" method="GET">
                 <input type="text" name="keyword" class="search-input" placeholder="本を検索する..." autocomplete="off">
             </form>
+        </div>
+
+        <div class="ai-banner-container">
+            <a href="recommend.php" class="ai-banner">
+                <div class="ai-banner-content">
+                    <div class="ai-banner-title">✨ AI司書に相談する</div>
+                    <div class="ai-banner-desc">今の気分に合わせて、おすすめの本を提案します</div>
+                </div>
+                <div class="ai-banner-icon">➔</div>
+            </a>
         </div>
 
         <section class="books-section">
@@ -507,7 +575,7 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
                 <?php endforeach; ?>
 
                 <?php if (empty($new_articles)): ?>
-                    <p style="color: var(--md-sys-color-on-surface-variant);">現在紹介記事はありません。</p>
+                    <p style="padding: 0 20px; color: var(--md-sys-color-on-surface-variant);">現在紹介記事はありません。</p>
                 <?php endif; ?>
             </div>
         </section>
