@@ -251,7 +251,7 @@ function h($string) {
                     
                     <div class="book-card-image-wrapper">
                         <?php if (!empty($article_data['image_url'])): ?>
-                            <img src="../<?= h($article_data['image_url']) ?>" 
+                            <img src="<?= h($article_data['image_url']) ?>" 
                                  alt="<?= h($article_data['book_title']) ?>のカバー画像" 
                                  class="book-card-image"
                                  onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
