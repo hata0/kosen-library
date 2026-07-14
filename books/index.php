@@ -93,14 +93,6 @@ if ($book_id !== '') {
             gap: 28px;
         }
 
-        .back-link {
-            display: inline-block;
-            color: var(--md-sys-color-primary);
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
         /* --- 本の情報セクション（レスポンシブFlexレイアウト） --- */
         .book-info-container {
             border-bottom: 1px solid var(--md-sys-color-outline);
@@ -237,6 +229,7 @@ if ($book_id !== '') {
         }
     </style>
     <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="../back-link.css">
 </head>
 <body>
 
@@ -245,7 +238,9 @@ if ($book_id !== '') {
     ?>
 
     <main class="main-content">
-        <a href="javascript:history.back();" class="back-link">← 前の画面に戻る</a>
+        <?php
+        require "../back_link.php";
+        ?>
 
         <?php if ($book): ?>
             <section class="book-info-container">

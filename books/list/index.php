@@ -60,8 +60,6 @@ try {
         .page-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
         .page-title { font-size: 22px; font-weight: 700; color: var(--md-sys-color-on-surface); }
         .book-count { font-size: 14px; color: var(--md-sys-color-on-surface-variant); }
-        
-        .back-link { display: inline-block; margin-bottom: 16px; color: var(--md-sys-color-primary); text-decoration: none; font-weight: 500; font-size: 14px; }
 
         /* --- 本のカードUI一覧スタイル --- */
         .book-card-list { display: flex; flex-direction: column; gap: 14px; width: 100%; }
@@ -94,6 +92,7 @@ try {
         }
     </style>
     <link rel="stylesheet" href="../../header.css">
+    <link rel="stylesheet" href="../../back-link.css">
 </head>
 <body>
 
@@ -102,7 +101,9 @@ try {
     ?>
 
     <main class="main-content">
-        <a href="../../index.php" class="back-link">← ホームに戻る</a>
+        <?php
+        require "../../back_link.php";
+        ?>
 
         <div class="page-header">
             <h1 class="page-title">蔵書一覧</h1>

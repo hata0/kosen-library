@@ -103,11 +103,6 @@ function h($string) {
             margin: 0 auto; padding: 24px 20px; display: flex; flex-direction: column; gap: 24px;
         }
 
-        .back-link {
-            display: inline-block; color: var(--md-sys-color-primary);
-            text-decoration: none; font-weight: 500; font-size: 14px;
-        }
-
         /* --- 記事詳細エリア --- */
         .article-container {
             border-bottom: 1px solid var(--md-sys-color-outline);
@@ -193,6 +188,7 @@ function h($string) {
         }
     </style>
     <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="../back-link.css">
 </head>
 <body>
 
@@ -201,7 +197,9 @@ function h($string) {
     ?>
 
     <main class="main-content">
-        <a href="javascript:history.back();" class="back-link">← 前の画面に戻る</a>
+        <?php
+        require "../back_link.php";
+        ?>
 
         <?php if ($error_message): ?>
             <div class="alert-error"><?= h($error_message) ?></div>

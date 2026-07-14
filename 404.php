@@ -1,15 +1,5 @@
 <?php
-// セッションの開始
-session_start();
-
-// ログイン状態によって右上のナビゲーションを切り替える
-if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
-    $nav_text = "マイページ";
-    $nav_link = "/kosen-library/mypage/index.php";
-} else {
-    $nav_text = "ログイン";
-    $nav_link = "/kosen-library/login/index.php";
-}
+require "header_session.php";
 ?>
 <!DOCTYPE html>
 <html lang="ja">
@@ -40,18 +30,6 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             display: flex;
             flex-direction: column;
         }
-
-        /* --- ヘッダー --- */
-        .app-header {
-            background-color: var(--md-sys-color-surface);
-            border-bottom: 1px solid var(--md-sys-color-outline);
-            position: sticky; top: 0; z-index: 10; width: 100%;
-        }
-        .header-inner { max-width: var(--max-content-width); margin: 0 auto; padding: 16px 20px 8px 20px; }
-        .app-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; }
-        .app-nav { display: flex; gap: 24px; }
-        .nav-item { text-decoration: none; color: var(--md-sys-color-on-surface-variant); font-size: 15px; font-weight: 500; padding: 6px 0; transition: color 0.2s; }
-        .nav-item:hover { color: var(--md-sys-color-primary); }
 
         /* --- メインコンテンツ（エラー表示部分） --- */
         .main-content {
@@ -121,25 +99,83 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
         }
 
         @media (min-width: 768px) {
-            .header-inner { padding: 24px 24px 12px 24px; display: flex; justify-content: space-between; align-items: center; }
-            .app-title { margin-bottom: 0; font-size: 24px; }
             .error-code { font-size: 120px; }
             .error-title { font-size: 28px; }
             .error-gif { max-width: 320px; } /* PC画面では少し大きくする */
+        }
+
+        .app-header {
+            background-color: var(--md-sys-color-surface);
+            border-bottom: 1px solid var(--md-sys-color-outline);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            width: 100%;
+        }
+        .header-inner {
+            max-width: var(--max-content-width);
+            margin: 0 auto;
+            padding: 16px 20px 8px 20px;
+        }
+        .app-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--md-sys-color-on-surface);
+            margin-bottom: 12px;
+        }
+        .app-nav {
+            display: flex;
+            gap: 24px;
+        }
+        .nav-item {
+            text-decoration: none;
+            color: var(--md-sys-color-on-surface-variant);
+            font-size: 15px;
+            font-weight: 500;
+            padding: 6px 0;
+            position: relative;
+            transition: color 0.2s;
+        }
+        .nav-item.active {
+            color: var(--md-sys-color-on-surface);
+            font-weight: 700;
+        }
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -9px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background-color: var(--md-sys-color-primary);
+            border-radius: 3px 3px 0 0;
+        }
+
+        @media (min-width: 768px){
+            .header-inner {
+                padding: 24px 24px 12px 24px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .app-title {
+                margin-bottom: 0;
+                font-size: 24px;
+            }
+            .nav-item {
+                font-size: 16px;
+            }
+            .nav-item.active::after {
+                bottom: -13px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="header-inner">
-            <div class="app-title">図書室アプリ</div>
-            <nav class="app-nav">
-                <a href="/kosen-library/index.php" class="nav-item">ホーム</a>
-                <a href="<?= htmlspecialchars($nav_link, ENT_QUOTES, 'UTF-8') ?>" class="nav-item"><?= htmlspecialchars($nav_text, ENT_QUOTES, 'UTF-8') ?></a>
-            </nav>
-        </div>
-    </header>
+    <?php
+    require "header.php";
+    ?>
 
     <main class="main-content">
         <div class="error-code">404</div>
