@@ -141,7 +141,7 @@ function h($string) {
         .post-table th, .post-table td { padding: 16px; border-bottom: 1px solid var(--md-sys-color-outline-variant); vertical-align: middle; }
         .post-table th { font-size: 13px; color: var(--md-sys-color-on-surface-variant); font-weight: 500; background-color: #fafafa; }
         .post-table tr:last-child td { border-bottom: none; }
-        .article-title { font-size: 15px; font-weight: 700; color: var(--md-sys-color-on-surface); text-decoration: none; }
+        .article-title { font-size: 15px; font-weight: 700; color: var(--md-sys-color-primary); text-decoration: none; }
         .article-title:hover { color: var(--md-sys-color-primary); text-decoration: underline; }
         .date-text { font-size: 14px; color: var(--md-sys-color-on-surface-variant); }
 

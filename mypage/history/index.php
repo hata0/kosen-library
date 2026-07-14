@@ -121,7 +121,7 @@ function h($string) {
         .history-table th, .history-table td { padding: 16px; border-bottom: 1px solid var(--md-sys-color-outline-variant); vertical-align: middle; }
         .history-table th { font-size: 13px; color: var(--md-sys-color-on-surface-variant); font-weight: 500; background-color: #fafafa; }
         .history-table tr:last-child td { border-bottom: none; }
-        .book-title { font-size: 15px; font-weight: 700; color: var(--md-sys-color-on-surface); text-decoration: none; }
+        .book-title { font-size: 15px; font-weight: 700; color: var(--md-sys-color-primary); text-decoration: none; }
         .book-title:hover { color: var(--md-sys-color-primary); text-decoration: underline; }
         .date-text { font-size: 14px; color: var(--md-sys-color-on-surface-variant); }
 
