@@ -127,6 +127,27 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             .error-title { font-size: 28px; }
             .error-gif { max-width: 320px; } /* PC画面では少し大きくする */
         }
+
+        /* 文字の揺れ・登場のアニメーション */
+        @keyframes shake-and-fade {
+            0%, 100% { opacity: 0; transform: translateY(10px); } /* 最初と最後は消える */
+            10%, 90% { opacity: 1; transform: translateY(0); }   /* 登場して静止 */
+            20%, 40%, 60% { transform: translateX(-5px); }       /* 揺れる */
+            30%, 50%, 70% { transform: translateX(5px); }
+        }
+
+
+        .bug-message {
+            font-size: 16px;
+            font-weight: bold;
+            color: #d32f2f; /* 目立つ赤色 */
+            margin-top: 16px;
+            /* 4秒周期でアニメーションを無限ループ */
+            animation: shake-and-fade 4.3s ease-in-out infinite;
+        }
+
+
+
     </style>
 </head>
 <body>
@@ -145,11 +166,10 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
         <div class="error-code">404</div>
         <h1 class="error-title">ページが見つかりません</h1>
 
-        <!-- ★ 追加：GIF画像の配置エリア -->
         <div class="gif-container">
-            <!-- srcの "your-animation.gif" の部分を、ご自身で用意したGIFのパスに書き換えてください -->
-            <!-- ネット上のフリーGIF等のURLを直接指定する（https://...）ことも可能です -->
             <img src="/kosen-library/video_collection/atsushi.gif" alt="404 Error Animation" class="error-gif">
+            <!-- ★ここに追加 -->
+            <p class="bug-message">ページ見つからないの、バグだろー！！！</p>
         </div>
 
         <p class="error-desc">
