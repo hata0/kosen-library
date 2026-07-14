@@ -156,9 +156,9 @@ $display_articles = $stmt->fetchAll();
 
         /* --- 紹介記事リスト --- */
         .articles-container {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 2列に指定 */
+            gap: 12px;                             /* カード間の隙間 */
             padding: 0 20px;
         }
 
@@ -180,16 +180,18 @@ $display_articles = $stmt->fetchAll();
 
         .article-banner {
             width: 100%;
-            height: 160px;
+            aspect-ratio: 3 / 4;
             background-color: var(--md-sys-color-surface-variant);
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--md-sys-color-on-surface-variant);
-            font-size: 14px;
+            font-size: 12px;
             font-weight: bold;
             border-bottom: 1px solid var(--md-sys-color-outline);
-            overflow: hidden;
+            padding: 0;
+            /* 【追加】中身がはみ出さないようにガード */
+            overflow: hidden; 
         }
 
         .article-banner img {
