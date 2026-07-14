@@ -188,6 +188,7 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
         }
     </style>
     <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="../back-link.css">
 </head>
 <body>
 
@@ -196,7 +197,9 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
     ?>
 
     <main class="main-content">
-        <a href="../index.php" class="back-link">← ホームに戻る</a>
+        <?php
+        require "../back_link.php";
+        ?>
 
         <div class="search-container" style="margin-bottom: 24px;">
             <form action="index.php" method="GET">

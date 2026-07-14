@@ -202,6 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['profile'])) {
         .book-publisher { font-size: 12px; color: #9aa0a6; }
     </style>
     <link rel="stylesheet" href="header.css">
+    <link rel="stylesheet" href="back-link.css">
 </head>
 <body>
 
@@ -210,6 +211,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['profile'])) {
     ?>
 
     <main class="main-content">
+        <?php
+        require "back_link.php";
+        ?>
         
         <div>
             <h1 class="page-title">AI司書のおすすめ選書</h1>

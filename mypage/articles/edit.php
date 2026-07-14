@@ -183,6 +183,7 @@ function h($string) {
         }
     </style>
     <link rel="stylesheet" href="../../header.css">
+    <link rel="stylesheet" href="../../back-link.css">
 </head>
 <body>
     <?php
@@ -191,7 +192,9 @@ function h($string) {
 
     <main class="main-content">
         <div class="page-header">
-            <a href="index.php" class="back-link">← 投稿管理へ戻る</a>
+            <?php
+            require "../../back_link.php";
+            ?>
         </div>
         
         <h1 class="page-title">記事の編集</h1>

@@ -222,6 +222,7 @@ function h($string) {
         }
     </style>
     <link rel="stylesheet" href="../../header.css">
+    <link rel="stylesheet" href="../../back-link.css">
 </head>
 <body>
     <?php
@@ -230,7 +231,9 @@ function h($string) {
 
     <main class="main-content">
         <div class="page-header">
-            <a href="javascript:history.back()" class="back-link">← 前の画面に戻る</a>
+            <?php
+            require "../../back_link.php";
+            ?>
         </div>
         
         <h1 class="page-title">紹介記事投稿</h1>

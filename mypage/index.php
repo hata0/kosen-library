@@ -212,6 +212,7 @@ function h($string) {
         }
     </style>
     <link rel="stylesheet" href="../header.css">
+    <link rel="stylesheet" href="../back-link.css">
 </head>
 <body>
     <?php
@@ -219,6 +220,10 @@ function h($string) {
     ?>
 
     <main class="main-content">
+        <?php
+        require "../back_link.php";
+        ?>
+
         <h1 class="page-title">マイページ</h1>
 
         <?php if ($error_message): ?>

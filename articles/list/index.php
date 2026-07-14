@@ -310,6 +310,7 @@ $display_articles = $stmt->fetchAll();
         }
     </style>
     <link rel="stylesheet" href="../../header.css">
+    <link rel="stylesheet" href="../../back-link.css">
 </head>
 <body>
 
@@ -318,7 +319,10 @@ $display_articles = $stmt->fetchAll();
     ?>
 
     <main class="main-content">
-        
+        <?php
+        require "../../back_link.php";
+        ?>
+
         <div class="page-header">
             <h1 class="page-title">紹介記事一覧</h1>
         </div>
