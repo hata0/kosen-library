@@ -258,8 +258,8 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             display: flex;
             overflow-x: auto;
             flex-wrap: nowrap;
-            gap: 12px;
-            padding: 4px 20px 16px 20px;
+            gap: 8px;
+            padding: 0 0 12px 0;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
         }
@@ -282,6 +282,7 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             color: inherit;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             transition: transform 0.2s, box-shadow 0.2s;
+            margin: 0;
         }
 
         .book-card:active {
@@ -299,16 +300,21 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             font-size: 12px;
             font-weight: bold;
             border-bottom: 1px solid var(--md-sys-color-outline);
+            padding: 0;
+            /* 【追加】中身がはみ出さないようにガード */
+            overflow: hidden; 
         }
-        
+
         .book-cover img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            /* 【変更】auto から 100% に変更して領域いっぱいに固定 */
+            height: 100%; 
+            /* 横長・縦長の画像でも、アスペクト比を保ったまま綺麗に中央をトリミング */
+            object-fit: cover; 
         }
 
         .book-info {
-            padding: 10px;
+            padding: 8px;
             display: flex;
             flex-direction: column;
             gap: 4px;
