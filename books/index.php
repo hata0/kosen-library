@@ -1,4 +1,7 @@
 <?php
+require "../header_session.php";
+?>
+<?php
 // URLパラメータから本のIDを取得（未指定の場合は空文字）
 $book_id = isset($_GET['id']) ? trim($_GET['id']) : '';
 
@@ -233,18 +236,13 @@ if ($book_id !== '') {
             .article-title { font-size: 18px; }
         }
     </style>
+    <link rel="stylesheet" href="../header.css">
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="header-inner">
-            <div class="app-title">図書室アプリ</div>
-            <nav class="app-nav">
-                <a href="../index.php" class="nav-item">ホーム</a>
-                <a href="../mypage/" class="nav-item">マイページ</a>
-            </nav>
-        </div>
-    </header>
+    <?php
+    require "../header.php";
+    ?>
 
     <main class="main-content">
         <a href="javascript:history.back();" class="back-link">← 前の画面に戻る</a>

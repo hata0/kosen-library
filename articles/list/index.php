@@ -1,4 +1,7 @@
 <?php
+require "../../header_session.php";
+?>
+<?php
 // ==========================================================================
 // 1. データベース接続設定 (必要に応じて書き換えてください)
 // ==========================================================================
@@ -111,45 +114,6 @@ $display_articles = $stmt->fetchAll();
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-        }
-
-        /* --- ヘッダー --- */
-        .app-header {
-            background-color: var(--md-sys-color-surface);
-            border-bottom: 1px solid var(--md-sys-color-outline);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            width: 100%;
-        }
-
-        .header-inner {
-            max-width: var(--max-content-width);
-            margin: 0 auto;
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
-        .back-button {
-            text-decoration: none;
-            color: var(--md-sys-color-on-surface-variant);
-            font-size: 20px;
-            font-weight: 700;
-            padding: 4px 8px;
-            margin-left: -8px;
-            transition: opacity 0.2s;
-        }
-
-        .back-button:active {
-            opacity: 0.5;
-        }
-
-        .app-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--md-sys-color-on-surface);
         }
 
         /* --- メインコンテンツエリア --- */
@@ -324,10 +288,6 @@ $display_articles = $stmt->fetchAll();
            タブレット・PC向けのレスポンシブ調整 (ブレイクポイント: 768px以上)
            ========================================================================== */
         @media (min-width: 768px) {
-            .header-inner {
-                padding: 24px;
-            }
-
             .main-content {
                 padding: 40px 24px 60px 24px;
                 gap: 28px;
@@ -349,15 +309,13 @@ $display_articles = $stmt->fetchAll();
             }
         }
     </style>
+    <link rel="stylesheet" href="../../header.css">
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="header-inner">
-            <a href="../../index.php" class="back-button">❮</a>
-            <div class="app-title">図書室アプリ</div>
-        </div>
-    </header>
+    <?php
+    require "../../header.php";
+    ?>
 
     <main class="main-content">
         
