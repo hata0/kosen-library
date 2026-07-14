@@ -1,4 +1,7 @@
 <?php
+require "../../header_session.php";
+?>
+<?php
 $db_host = 'localhost';         // ホスト名 (例: localhost, 127.0.0.1)
 $db_name = 'library_app';// データベース名
 $db_user = 'root';     // ユーザー名
@@ -51,13 +54,6 @@ try {
         * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
         body { font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', Meiryo, sans-serif; background-color: var(--md-sys-color-background); color: var(--md-sys-color-on-surface); min-height: 100vh; display: flex; flex-direction: column; }
         
-        /* --- ヘッダー --- */
-        .app-header { background-color: var(--md-sys-color-surface); border-bottom: 1px solid var(--md-sys-color-outline); position: sticky; top: 0; z-index: 10; width: 100%; }
-        .header-inner { max-width: var(--max-content-width); margin: 0 auto; padding: 16px 20px 8px 20px; }
-        .app-title { font-size: 20px; font-weight: 700; color: var(--md-sys-color-on-surface); margin-bottom: 12px; }
-        .app-nav { display: flex; gap: 24px; }
-        .nav-item { text-decoration: none; color: var(--md-sys-color-on-surface-variant); font-size: 15px; font-weight: 500; padding: 6px 0; }
-        
         /* --- メインコンテンツ --- */
         .main-content { flex: 1; width: 100%; max-width: var(--max-content-width); margin: 0 auto; padding: 24px 20px; display: flex; flex-direction: column; }
         
@@ -87,9 +83,6 @@ try {
 
         /* --- PC・タブレット向けのレスポンシブ調整 --- */
         @media (min-width: 768px) {
-            .header-inner { padding: 24px 24px 12px 24px; display: flex; justify-content: space-between; align-items: center; }
-            .app-title { margin-bottom: 0; font-size: 24px; }
-            .nav-item { font-size: 16px; }
             .main-content { padding: 40px 24px; }
             
             .page-title { font-size: 26px; }
@@ -100,18 +93,13 @@ try {
             .book-card-meta { font-size: 14px; }
         }
     </style>
+    <link rel="stylesheet" href="../../header.css">
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="header-inner">
-            <div class="app-title">図書室アプリ</div>
-            <nav class="app-nav">
-                <a href="../../index.php" class="nav-item">ホーム</a>
-                <a href="../../mypage/" class="nav-item">マイページ</a>
-            </nav>
-        </div>
-    </header>
+    <?php
+    require "../../header.php";
+    ?>
 
     <main class="main-content">
         <a href="../../index.php" class="back-link">← ホームに戻る</a>

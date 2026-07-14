@@ -6,25 +6,21 @@
     z-index: 10;
     width: 100%;
 }
-
 .header-inner {
     max-width: var(--max-content-width);
     margin: 0 auto;
     padding: 16px 20px 8px 20px;
 }
-
 .app-title {
     font-size: 20px;
     font-weight: 700;
     color: var(--md-sys-color-on-surface);
     margin-bottom: 12px;
 }
-
 .app-nav {
     display: flex;
     gap: 24px;
 }
-
 .nav-item {
     text-decoration: none;
     color: var(--md-sys-color-on-surface-variant);
@@ -34,12 +30,10 @@
     position: relative;
     transition: color 0.2s;
 }
-
 .nav-item.active {
     color: var(--md-sys-color-on-surface);
     font-weight: 700;
 }
-
 .nav-item.active::after {
     content: '';
     position: absolute;
@@ -58,16 +52,13 @@
         justify-content: space-between;
         align-items: center;
     }
-
     .app-title {
         margin-bottom: 0;
         font-size: 24px;
     }
-
     .nav-item {
         font-size: 16px;
     }
-
     .nav-item.active::after {
         bottom: -13px;
     }
