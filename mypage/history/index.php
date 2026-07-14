@@ -169,7 +169,7 @@ function h($string) {
                             <th>書籍名</th>
                             <th>貸出日</th>
                             <th>返却日(期限)</th>
-                            <th>アクション</th>
+                            <th>操作</th>
                         </tr>
                     </thead>
                     <tbody>
