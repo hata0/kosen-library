@@ -78,24 +78,6 @@ if ($book_id !== '') {
             flex-direction: column;
         }
 
-        /* --- ヘッダー --- */
-        .app-header {
-            background-color: var(--md-sys-color-surface);
-            border-bottom: 1px solid var(--md-sys-color-outline);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            width: 100%;
-        }
-        .header-inner {
-            max-width: var(--max-content-width);
-            margin: 0 auto;
-            padding: 16px 20px 8px 20px;
-        }
-        .app-title { font-size: 20px; font-weight: 700; margin-bottom: 12px; }
-        .app-nav { display: flex; gap: 24px; }
-        .nav-item { text-decoration: none; color: var(--md-sys-color-on-surface-variant); font-size: 15px; font-weight: 500; padding: 6px 0; }
-
         /* --- メインコンテンツ --- */
         .main-content {
             flex: 1;
@@ -232,8 +214,6 @@ if ($book_id !== '') {
            タブレット・PC向けのレスポンシブ調整 (ブレイクポイント: 768px以上)
            ========================================================================== */
         @media (min-width: 768px) {
-            .header-inner { padding: 24px 24px 12px 24px; display: flex; justify-content: space-between; align-items: center; }
-            .app-title { margin-bottom: 0; font-size: 24px; }
             .main-content { padding: 40px 24px; gap: 36px; }
             
             /* 本の情報セクションをきれいな横並び(2カラム)へ変更 */

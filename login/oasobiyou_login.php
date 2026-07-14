@@ -1,6 +1,11 @@
 <?php
-// 1. セッションの開始
-session_start();
+// session_start(); // ← これを削除するか、下の書き方に変更します
+
+// もしセッションが開始されていなければ開始する
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
 
 $error_message = "";
 

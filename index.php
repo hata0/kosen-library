@@ -1,8 +1,8 @@
 <?php
-// 1. セッションの開始（ログイン状態をチェックするために必須）
-session_start();
-
-// 2. データベースへの接続設定（root / パスワードなし）
+require "header_session.php";
+?>
+<?php
+// 1. データベースへの接続設定（root / パスワードなし）
 $dsn = 'mysql:host=localhost;dbname=library_app;charset=utf8mb4';
 $db_user = 'root';
 $db_password = '';
@@ -13,11 +13,11 @@ try {
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
 
-    // 3. 新着の図書を最新順に3件取得（is_deleted = 0 の有効なデータのみ）
+    // 2. 新着の図書を最新順に3件取得（is_deleted = 0 の有効なデータのみ）
     $books_stmt = $pdo->query("SELECT * FROM books WHERE is_deleted = 0 ORDER BY id DESC LIMIT 3");
     $new_books = $books_stmt->fetchAll();
 
-    // 4. 新しい紹介記事を最新順に2件取得（booksテーブルと結合して本の画像URLも取得）
+    // 3. 新しい紹介記事を最新順に2件取得（booksテーブルと結合して本の画像URLも取得）
     // ※ articles.book_id と books.id で結合しています。環境に合わせてカラム名は調整してください。
     $articles_stmt = $pdo->query("
         SELECT a.*, b.image_url AS book_image_url 
@@ -32,15 +32,6 @@ try {
 } catch (PDOException $e) {
     // 万が一接続できない場合はエラーを表示
     exit('データベース接続エラー: ' . htmlspecialchars($e->getMessage(), ENT_QUOTES, 'UTF-8'));
-}
-
-// 5. ログイン状態によって右上のナビゲーションの文字とリンク先を切り替える
-if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
-    $nav_text = "マイページ";
-    $nav_link = "mypage/index.php";
-} else {
-    $nav_text = "ログイン";
-    $nav_link = "login/index.php";
 }
 ?>
 <!DOCTYPE html>
@@ -76,60 +67,6 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-        }
-
-        /* --- ヘッダー --- */
-        .app-header {
-            background-color: var(--md-sys-color-surface);
-            border-bottom: 1px solid var(--md-sys-color-outline);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            width: 100%;
-        }
-
-        .header-inner {
-            max-width: var(--max-content-width);
-            margin: 0 auto;
-            padding: 16px 20px 8px 20px;
-        }
-
-        .app-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--md-sys-color-on-surface);
-            margin-bottom: 12px;
-        }
-
-        .app-nav {
-            display: flex;
-            gap: 24px;
-        }
-
-        .nav-item {
-            text-decoration: none;
-            color: var(--md-sys-color-on-surface-variant);
-            font-size: 15px;
-            font-weight: 500;
-            padding: 6px 0;
-            position: relative;
-            transition: color 0.2s;
-        }
-
-        .nav-item.active {
-            color: var(--md-sys-color-on-surface);
-            font-weight: 700;
-        }
-
-        .nav-item.active::after {
-            content: '';
-            position: absolute;
-            bottom: -9px;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background-color: var(--md-sys-color-primary);
-            border-radius: 3px 3px 0 0;
         }
 
         /* --- メインコンテンツエリア --- */
@@ -258,8 +195,8 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             display: flex;
             overflow-x: auto;
             flex-wrap: nowrap;
-            gap: 12px;
-            padding: 4px 20px 16px 20px;
+            gap: 8px;
+            padding: 0 0 12px 0;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
         }
@@ -282,6 +219,7 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             color: inherit;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             transition: transform 0.2s, box-shadow 0.2s;
+            margin: 0;
         }
 
         .book-card:active {
@@ -299,16 +237,21 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             font-size: 12px;
             font-weight: bold;
             border-bottom: 1px solid var(--md-sys-color-outline);
+            padding: 0;
+            /* 【追加】中身がはみ出さないようにガード */
+            overflow: hidden; 
         }
-        
+
         .book-cover img {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
+            /* 【変更】auto から 100% に変更して領域いっぱいに固定 */
+            height: 100%; 
+            /* 横長・縦長の画像でも、アスペクト比を保ったまま綺麗に中央をトリミング */
+            object-fit: cover; 
         }
 
         .book-info {
-            padding: 10px;
+            padding: 8px;
             display: flex;
             flex-direction: column;
             gap: 4px;
@@ -410,26 +353,6 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
            タブレット・PC向けのレスポンシブ調整 (ブレイクポイント: 768px以上)
            ========================================================================== */
         @media (min-width: 768px) {
-            .header-inner {
-                padding: 24px 24px 12px 24px;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-            }
-
-            .app-title {
-                margin-bottom: 0;
-                font-size: 24px;
-            }
-
-            .nav-item {
-                font-size: 16px;
-            }
-
-            .nav-item.active::after {
-                bottom: -13px;
-            }
-
             .main-content {
                 padding: 40px 24px 60px 24px;
                 gap: 40px;
@@ -488,18 +411,13 @@ if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] === true) {
             }
         }
     </style>
+    <link rel="stylesheet" href="header.css">
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="header-inner">
-            <div class="app-title">図書室アプリ</div>
-            <nav class="app-nav">
-                <a href="#" class="nav-item active">ホーム</a>
-                <a href="<?php echo htmlspecialchars($nav_link, ENT_QUOTES, 'UTF-8'); ?>" class="nav-item"><?php echo htmlspecialchars($nav_text, ENT_QUOTES, 'UTF-8'); ?></a>
-            </nav>
-        </div>
-    </header>
+    <?php
+    require "header.php";
+    ?>
 
     <main class="main-content">
         <div class="search-container">
