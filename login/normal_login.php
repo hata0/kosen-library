@@ -208,10 +208,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         /* --- ボタン --- */
         .submit-button {
-            width: max-content;
-            margin: 12px auto 0 auto;
-            padding: 10px 24px;
-            font-size: 14px;
+            width: 100%;
+            padding: 16px 24px;
+            font-size: 16px;
             font-weight: 700;
             color: #ffffff;
             background-color: var(--md-sys-color-primary);
@@ -219,41 +218,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             border-radius: 9999px;
             cursor: pointer;
             box-shadow: 0 2px 4px rgba(26, 115, 232, 0.2);
-            
-            position: relative;
-            z-index: 5;
-            transition: background-color 0.2s, box-shadow 0.2s, left 0.1s ease-out, top 0.1s ease-out;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            margin-top: 12px;
         }
 
-        /* 🌟 追加：最終確認モーダルのスタイル */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex; justify-content: center; align-items: center;
-            z-index: 100; opacity: 0; pointer-events: none;
-            transition: opacity 0.3s ease;
+        .submit-button:active {
+            background-color: #1557b0;
+            box-shadow: none;
         }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-
-        .modal-content {
-            background-color: #ffffff; padding: 24px; border-radius: 16px;
-            width: 90%; max-width: 320px; text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-            transform: scale(0.9); transition: transform 0.3s ease;
-        }
-        .modal-overlay.active .modal-content { transform: scale(1); }
-
-        .modal-title { font-size: 16px; font-weight: 700; margin-bottom: 20px; }
-        .modal-buttons { display: flex; gap: 12px; justify-content: center; }
-        
-        .fake-btn {
-            flex: 1; padding: 12px; font-size: 14px; font-weight: 700;
-            border-radius: 9999px; cursor: pointer; border: none;
-            background-color: var(--md-sys-color-surface-variant);
-            color: var(--md-sys-color-on-surface);
-            transition: background-color 0.2s;
-        }
-        .fake-btn:active { background-color: #e0e0e0; }
     </style>
 </head>
 <body>
@@ -270,8 +242,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="error-banner"><?php echo htmlspecialchars($error_message, ENT_QUOTES, 'UTF-8'); ?></div>
         <?php endif; ?>
 
-        <!-- 🌟 IDを付与してJavaScriptから制御しやすく変更 -->
-        <form id="loginForm" class="login-form" action="" method="POST">
+        <form class="login-form" action="" method="POST">
             <div class="input-group">
                 <label class="input-label" for="user_id">ユーザーID</label>
                 <input class="form-input" type="text" id="user_id" name="user_id" autocomplete="off" autocapitalize="none" required placeholder="">
@@ -282,75 +253,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <input class="form-input" type="password" id="password" name="password" required placeholder="">
             </div>
 
-            <!-- 🌟 type="button" にして勝手に送信されるのをガード -->
-            <button class="submit-button" type="button" id="triggerBtn">ログイン</button>
+            <button class="submit-button" type="submit">ログイン</button>
         </form>
     </div>
-
-    <!-- 🌟 最終確認用の2択モーダル（見た目は完全に同じ「いいえ」） -->
-    <div class="modal-overlay" id="confirmModal">
-        <div class="modal-content">
-            <div class="modal-title">本当にログインしますか？</div>
-            <div class="modal-buttons">
-                <button type="button" class="fake-btn" id="btnLeft">どっちでしょ</button>
-                <button type="button" class="fake-btn" id="btnRight">どっちでしょ</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const escapeBtn = document.getElementById('triggerBtn');
-            const loginForm = document.getElementById('loginForm');
-            const modal = document.getElementById('confirmModal');
-            const btnLeft = document.getElementById('btnLeft');
-            const btnRight = document.getElementById('btnRight');
-
-            // 1. 【おさらい】マウスから逃げるシステム
-            escapeBtn.addEventListener('mouseover', () => {
-                const moveRangeX = 150; 
-                const moveRangeY = 100; 
-                const randomX = (Math.random() - 0.5) * 2 * moveRangeX;
-                const randomY = (Math.random() - 0.5) * 2 * moveRangeY;
-                escapeBtn.style.left = `${randomX}px`;
-                escapeBtn.style.top = `${randomY}px`;
-            });
-
-            // 2. 苦労してボタンを押せたら、最終確認モーダルを表示
-            escapeBtn.addEventListener('click', () => {
-                // 入力欄の簡易チェック（空ならブラウザ標準の警告を出す）
-                if (!loginForm.checkValidity()) {
-                    loginForm.reportValidity();
-                    return;
-                }
-                
-                // 🌟 毎回左右どちらが「本物（ログイン）」になるかをランダムに決定
-                const isLeftTrue = Math.random() < 0.5;
-                
-                // いったん両方のイベントをクリアして再設定
-                btnLeft.onclick = null;
-                btnRight.onclick = null;
-
-                if (isLeftTrue) {
-                    btnLeft.onclick = () => loginForm.submit(); // 左が本物
-                    btnRight.onclick = () => closeModal();       // 右はただ閉じるだけ
-                } else {
-                    btnLeft.onclick = () => closeModal();       // 左はただ閉じるだけ
-                    btnRight.onclick = () => loginForm.submit(); // 右が本物
-                }
-
-                // モーダルを表示
-                modal.classList.add('active');
-            });
-
-            function closeModal() {
-                modal.classList.remove('active');
-                // 逃げ回ったボタンの位置をリセットしてあげる（優しさ）
-                escapeBtn.style.left = '0px';
-                escapeBtn.style.top = '0px';
-            }
-        });
-    </script>
 
 </body>
 </html>
