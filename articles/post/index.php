@@ -246,7 +246,7 @@ function h($string) {
 
     <main class="main-content">
         <div class="page-header">
-            <a href="javascript:history.back()" class="back-link">← 前のページへ戻る</a>
+            <a href="javascript:history.back()" class="back-link">← 前の画面に戻る</a>
         </div>
         
         <h1 class="page-title">紹介記事投稿</h1>
