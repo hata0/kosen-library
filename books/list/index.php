@@ -105,7 +105,7 @@ try {
         <a href="../../index.php" class="back-link">← ホームに戻る</a>
 
         <div class="page-header">
-            <h1 class="page-title">蔵書一覧</h1>
+            <h1 class="page-title">新着本一覧</h1>
             <div class="book-count">全 <?php echo count($books); ?> 冊</div>
         </div>
 
