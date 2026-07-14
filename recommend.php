@@ -230,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['profile'])) {
         
         <div>
             <h1 class="page-title">AI司書のおすすめ選書</h1>
-            <p class="page-description">本物のAI（Gemini）があなたのプロフィールを読み込み、文脈や感情に合わせて図書室の蔵書から最高の一冊を提案します。</p>
+            <p class="page-description">本物のAIがあなたのプロフィールを読み込み、文脈や感情に合わせて図書室の蔵書から最高の一冊を提案します。</p>
         </div>
 
         <form action="" method="POST" class="profile-form">
