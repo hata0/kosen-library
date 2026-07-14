@@ -1,4 +1,7 @@
 <?php
+require "header_session.php";
+?>
+<?php
 // ==========================================================================
 // 1. データベース接続設定
 // ==========================================================================
@@ -129,24 +132,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['profile'])) {
             min-height: 100vh;
         }
 
-        .app-header {
-            background-color: var(--md-sys-color-surface);
-            border-bottom: 1px solid var(--md-sys-color-outline);
-            position: sticky; top: 0; z-index: 10; width: 100%;
-        }
-
-        .header-inner {
-            max-width: var(--max-content-width); margin: 0 auto; padding: 16px 20px;
-            display: flex; align-items: center; gap: 16px;
-        }
-
-        .back-button {
-            text-decoration: none; color: var(--md-sys-color-on-surface-variant);
-            font-size: 20px; font-weight: 700; padding: 4px 8px; margin-left: -8px;
-        }
-
-        .app-title { font-size: 18px; font-weight: 700; }
-
         .main-content {
             max-width: var(--max-content-width); margin: 0 auto; padding: 30px 20px;
             display: flex; flex-direction: column; gap: 32px;
@@ -216,15 +201,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['profile'])) {
         .book-author { font-size: 13px; color: var(--md-sys-color-on-surface-variant); }
         .book-publisher { font-size: 12px; color: #9aa0a6; }
     </style>
+    <link rel="stylesheet" href="header.css">
 </head>
 <body>
 
-    <header class="app-header">
-        <div class="header-inner">
-            <a href="index.php" class="back-button">❮</a>
-            <div class="app-title">図書室アプリ</div>
-        </div>
-    </header>
+    <?php
+    require "header.php";
+    ?>
 
     <main class="main-content">
         
