@@ -74,7 +74,7 @@ INSERT INTO users (id, student_id, password, name, is_deleted) VALUES
 
 -- 2. books データ
 INSERT INTO books (id, title, author, publisher, year, ndc, is_deleted, image_url) VALUES
-(1, '文系でも知っておきたいプログラミングとプログラマーのこと', '清水亮', 'ダイヤモンド社', 2015, '007.64', 0, 'http://localhost/kosen-library/picture_collection/文系.jpeg'),
+(1, '文系でも知っておきたいプログラミングとプログラマーのこと', '清水亮', 'ダイヤモンド社', 2015, '007.64', 0, 'http://localhost/kosen-library/picture_collection/文系.jpg'),
 (2, '「女子マネージャー」の社会学', '関めぐみ', '左右社', 2025, '780.13', 0, 'http://localhost/kosen-library/picture_collection/女子マネ.jpg'),
 (3, '無職転生：異世界言ったら本気出す', '理不尽な孫の手', 'KADOKAWA', 2014, '913.6', 0, 'http://localhost/kosen-library/picture_collection/無職転生.jpg'),
 (4, '坂本龍馬：新しい日本を切り開いた幕末の志士', 'ながいのりあき', '小学館', 2009, '289.1', 0, 'http://localhost/kosen-library/picture_collection/坂本龍馬.jpg'),
