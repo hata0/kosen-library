@@ -75,22 +75,20 @@ INSERT INTO users (id, student_id, password, name, is_deleted) VALUES
 -- 2. books データ
 INSERT INTO books (id, title, author, publisher, year, ndc, is_deleted, image_url) VALUES
 (1, '文系でも知っておきたいプログラミングとプログラマーのこと', '清水亮', 'ダイヤモンド社', 2015, '007.64', 0, 'http://localhost/kosen-library/picture_collection/文系.jpeg'),
-(2, '留年回避の心得', '平野雄太郎', '北九州高専', 2026, '007', 0, 'http://localhost/kosen-library/picture_collection/留年.jpeg'),
-(3, '「女子マネージャー」の社会学', '関めぐみ', '左右社', 2025, '780.13', 0, 'http://localhost/kosen-library/picture_collection/女子マネ.jpg'),
-(4, '無職転生：異世界言ったら本気出す', '理不尽な孫の手', 'KADOKAWA', 2014, '913.6', 0, 'http://localhost/kosen-library/picture_collection/無職転生.jpg'),
-(5, '坂本龍馬：新しい日本を切り開いた幕末の志士', 'ながいのりあき', '小学館', 2009, '289.1', 0, 'http://localhost/kosen-library/picture_collection/坂本龍馬.jpg'),
-(6, '君の膵臓をたべたい', '住野よる', '双葉社', 2015, '913.6', 0, 'http://localhost/kosen-library/picture_collection/君の膵臓をたべたい.jpg'),
-(7, 'コンビニ人間', '村田紗耶香', '文藝春秋', 2016, '913.6', 0, 'http://localhost/kosen-library/picture_collection/コンビニ人間.jpg'),
-(8, '世界の中心で、愛をさけぶ', '片山恭一', '小学館', 2001, '913.6', 0, 'http://localhost/kosen-library/picture_collection/世界の中心で、愛をさけぶ.jpg'),
-(9, '人間失格', '太宰治', 'ホーム社', 2010, '726.1', 0, 'http://localhost/kosen-library/picture_collection/人間失格.jpg'),
-(10, 'もし高校野球の女子マネージャーがドラッカーの『マネジメント』を読んだら', '岩崎夏海', 'ダイヤモンド社', 2009, '913.6', 0, 'http://localhost/kosen-library/picture_collection/もし高校野球の女子マネージャー.jpg'),
-(11, 'サピエンス全史(上) 文明の構造と人類の幸福', 'ユヴァル・ノア・ハラリ', '河出書房新社', 2016, '209', 0, 'http://localhost/kosen-library/picture_collection/027567208.jpg'),
-(12, 'サピエンス全史(下) 文明の構造と人類の幸福', 'ユヴァル・ノア・ハラリ', '河出書房新社', 2016, '209', 0, 'http://localhost/kosen-library/picture_collection/027567209.jpg'),
-(13, 'スマホ脳', 'アンデシュ・ハンセン', '新潮社', 2020, '491', 0, 'http://localhost/kosen-library/picture_collection/sumahonou.jpg'),
-(14, '君たちはどう生きるか', 'スタジオジブリ, 文春文庫 編', '文藝春秋', 2025, '778.77', 0, 'http://localhost/kosen-library/picture_collection/034212348.jpg'),
-(15, '人間失格', '太宰 治', '新潮社', 2006, '913.6', 0, 'http://localhost/kosen-library/picture_collection/ningenshikkaku.jpg'),
-(16, 'FACTFULNESS', 'ハンス・ロスリング', '日経BP', 2019, '002.7', 0, 'http://localhost/kosen-library/picture_collection/FACTFULNESS.jpg'),
-(17, '編入数学徹底研究', '桜井基晴', '金子書房', 2020, '410', 0, 'http://localhost/kosen-library/picture_collection/030724357.jpg');
+(2, '「女子マネージャー」の社会学', '関めぐみ', '左右社', 2025, '780.13', 0, 'http://localhost/kosen-library/picture_collection/女子マネ.jpg'),
+(3, '無職転生：異世界言ったら本気出す', '理不尽な孫の手', 'KADOKAWA', 2014, '913.6', 0, 'http://localhost/kosen-library/picture_collection/無職転生.jpg'),
+(4, '坂本龍馬：新しい日本を切り開いた幕末の志士', 'ながいのりあき', '小学館', 2009, '289.1', 0, 'http://localhost/kosen-library/picture_collection/坂本龍馬.jpg'),
+(5, '君の膵臓をたべたい', '住野よる', '双葉社', 2015, '913.6', 0, 'http://localhost/kosen-library/picture_collection/君の膵臓をたべたい.jpg'),
+(6, 'コンビニ人間', '村田紗耶香', '文藝春秋', 2016, '913.6', 0, 'http://localhost/kosen-library/picture_collection/コンビニ人間.jpg'),
+(7, '世界の中心で、愛をさけぶ', '片山恭一', '小学館', 2001, '913.6', 0, 'http://localhost/kosen-library/picture_collection/世界の中心で、愛をさけぶ.jpg'),
+(8, '人間失格', '太宰治', 'ホーム社', 2010, '726.1', 0, 'http://localhost/kosen-library/picture_collection/人間失格.jpg'),
+(9, 'もし高校野球の女子マネージャーがドラッカーの『マネジメント』を読んだら', '岩崎夏海', 'ダイヤモンド社', 2009, '913.6', 0, 'http://localhost/kosen-library/picture_collection/もし高校野球の女子マネージャー.jpg'),
+(10, 'サピエンス全史(上) 文明の構造と人類の幸福', 'ユヴァル・ノア・ハラリ', '河出書房新社', 2016, '209', 0, 'http://localhost/kosen-library/picture_collection/027567208.jpg'),
+(11, 'サピエンス全史(下) 文明の構造と人類の幸福', 'ユヴァル・ノア・ハラリ', '河出書房新社', 2016, '209', 0, 'http://localhost/kosen-library/picture_collection/027567209.jpg'),
+(12, '君たちはどう生きるか', 'スタジオジブリ, 文春文庫 編', '文藝春秋', 2025, '778.77', 0, 'http://localhost/kosen-library/picture_collection/034212348.jpg'),
+(13, '人間失格', '太宰 治', '新潮社', 2006, '913.6', 0, 'http://localhost/kosen-library/picture_collection/ningenshikkaku.jpg'),
+(14, 'FACTFULNESS', 'ハンス・ロスリング', '日経BP', 2019, '002.7', 0, 'http://localhost/kosen-library/picture_collection/FACTFULNESS.jpg'),
+(15, '編入数学徹底研究', '桜井基晴', '金子書房', 2020, '410', 0, 'http://localhost/kosen-library/picture_collection/030724357.jpg');
 
 -- 3. articles データ
 INSERT INTO articles (id, user_id, book_id, title, content, is_deleted, created_at) VALUES
