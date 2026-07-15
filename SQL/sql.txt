@@ -84,6 +84,16 @@ INSERT INTO books (id, title, author, publisher, year, ndc, is_deleted, image_ur
 (8, '世界の中心で、愛をさけぶ', '片山恭一', '小学館', '2001', '913.6', '0', http://localhost/kosen-library/picture_collection/世界の中心で、愛をさけぶ.jpg'),
 (9, '人間失格', '太宰治', 'ホーム社', '2010', '726.1', '0', http://localhost/kosen-library/picture_collection/人間失格.jpg'),
 (10, 'もし高校野球の女子マネージャーがドラッカーの『マネジメント』を読んだら', '岩崎夏海', 'ダイヤモンド社', '2009','913.6', '0', 'http://localhost/kosen-library/picture_collection/もし高校野球の女子マネージャー.jpg');
+(11, 'サピエンス全史(上) 文明の構造と人類の幸福', 'ユヴァル・ノア・ハラリ', '河出書房新社', 2016, '209', 0, 'http://localhost/kosen-library/picture_collection/027567208.jpg'),
+(12, 'サピエンス全史(下) 文明の構造と人類の幸福', 'ユヴァル・ノア・ハラリ', '河出書房新社', 2016, '209', 0, 'http://localhost/kosen-library/picture_collection/027567209.jpg'),
+(13, 'スマホ脳', 'アンデシュ・ハンセン', '新潮社', 2020, '491', 0, 'http://localhost/kosen-library/picture_collection/sumahonou.jpg'),
+(14, '君たちはどう生きるか
+', 'スタジオジブリ, 文春文庫 編', '文藝春秋', 2025, '778.77', 0, 'http://localhost/kosen-library/picture_collection/034212348'),
+(15, '人間失格', '太宰 治', '新潮社', 2006, '913.6', 0, 'http://localhost/kosen-library/picture_collection/ningenshikkaku.jpg'),
+(16, 'FACTFULNESS', 'ハンス・ロスリング', '日経BP', 2019, '002.7', 0, 'http://localhost/kosen-library/picture_collection/FACTFULNESS'),
+(17, '編入数学徹底研究', '桜井基晴', '金子書房', 2020, '410', 0, 'http://localhost/kosen-library/picture_collection/030724357
+');
+
 -- 3. articles データ
 INSERT INTO articles (id, user_id, book_id, title, content, is_deleted, created_at) VALUES
 (1, 1, 1, '文系にこそ読んでほしい一冊', '非常に読みやすかったです！数式がほとんど出てこないので、プログラミング経験がなくてもAIの全体像をイメージすることができました。最初の一冊として本当におすすめです。', 0, '2026-05-20 14:30:00'),
