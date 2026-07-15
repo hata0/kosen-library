@@ -93,7 +93,7 @@ $display_articles = $stmt->fetchAll();
             --md-sys-color-primary: #1a73e8;
             --md-sys-color-background: #ffffff;
             --md-sys-color-surface: #ffffff;
-            --md-sys-color-surface-variant: #f1f3f4;
+            --md-sys-color-surface-variant: #f8f9fa;
             --md-sys-color-on-surface: #1f1f1f;
             --md-sys-color-on-surface-variant: #5f6368;
             --md-sys-color-outline: #e0e0e0;
@@ -122,15 +122,13 @@ $display_articles = $stmt->fetchAll();
             width: 100%;
             max-width: var(--max-content-width);
             margin: 0 auto;
-            padding: 20px 0 40px 0;
+            padding: 24px 20px;
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
 
-        .page-header {
-            padding: 0 20px;
-        }
+        .page-header { display: flex; justify-content: space-between; align-items: flex-end; }
 
         .page-title {
             font-size: 22px;
@@ -138,9 +136,10 @@ $display_articles = $stmt->fetchAll();
             color: var(--md-sys-color-on-surface);
         }
 
+        .book-count { font-size: 14px; color: var(--md-sys-color-on-surface-variant); }
+
         /* 検索バー */
         .search-box {
-            padding: 0 20px;
         }
 
         .search-input {
@@ -149,7 +148,7 @@ $display_articles = $stmt->fetchAll();
             font-size: 15px;
             color: var(--md-sys-color-on-surface);
             background-color: var(--md-sys-color-surface-variant);
-            border: 1px solid transparent;
+            border: 1px solid var(--md-sys-color-outline);
             border-radius: 8px;
             outline: none;
         }
@@ -158,8 +157,7 @@ $display_articles = $stmt->fetchAll();
         .articles-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr); /* 2列に指定 */
-            gap: 12px;                             /* カード間の隙間 */
-            padding: 0 20px;
+            gap: 14px;                             /* カード間の隙間 */
         }
 
         .article-card {
@@ -325,6 +323,7 @@ $display_articles = $stmt->fetchAll();
 
         <div class="page-header">
             <h1 class="page-title">紹介記事一覧</h1>
+            <div class="book-count">全 <?php echo $total_articles; ?> 件</div>
         </div>
 
         <div class="search-box">

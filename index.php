@@ -421,7 +421,7 @@ try {
 
     <main class="main-content">
         <div class="search-container">
-            <form action="search/index.php" method="GET">
+            <form action="books/list/index.php" method="GET">
                 <input type="text" name="keyword" class="search-input" placeholder="本を検索する..." autocomplete="off">
             </form>
         </div>
