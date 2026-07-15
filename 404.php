@@ -202,12 +202,11 @@ require "header_session.php";
         <div class="error-code">404</div>
         <h1 class="error-title">ページが見つかりません</h1>
 
-        <div class="gif-container">
+        <!-- <div class="gif-container">
             <img src="/kosen-library/video_collection/atsushi.gif" alt="404 Error Animation" class="error-gif">
-            <!-- ★ここに追加 -->
+            
             <p class="bug-message">ページ見つからないの、バグだろー！！！</p>
-        </div>
-
+        </div> -->
         <p class="error-desc">
             お探しのページは削除されたか、URLが変更された可能性があります。<br>
             正しいURLを入力したか再度ご確認ください。
