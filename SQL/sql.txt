@@ -74,10 +74,10 @@ INSERT INTO users (id, student_id, password, name, is_deleted) VALUES
 
 -- 2. books データ
 INSERT INTO books (id, title, author, publisher, year, ndc, is_deleted, image_url) VALUES
-(1, 'こころ', '夏目漱石', '青空文庫選書', 2010, '913', 0, NULL),
-(2, '留年回避の心得', '平野雄太郎', '北九州高専', 2026, '007', 0, 'http://localhost/kosen-library/picture_collection/IMG_4186.jpeg'),
+(1, '文系でも知っておきたいプログラミングとプログラマーのこと', '清水亮', 'ダイヤモンド社', 2015, '007.64', 0, 'http://localhost/kosen-library/picture_collection/文系.jpeg'),
+(2, '留年回避の心得', '平野雄太郎', '北九州高専', 2026, '007', 0, 'http://localhost/kosen-library/picture_collection/留年.jpeg'),
 (3, '「女子マネージャー」の社会学', '関めぐみ', '左右社', 2025, '780.13', 0, 'http://localhost/kosen-library/picture_collection/女子マネ.jpg'),
-(4, '無色転生：異世界言ったら本気出す', '理不尽な孫の手', 'KADOKAWA', 2014, '913.6', 0, 'http://localhost/kosen-library/picture_collection/無職転生.jpg'),
+(4, '無職転生：異世界言ったら本気出す', '理不尽な孫の手', 'KADOKAWA', 2014, '913.6', 0, 'http://localhost/kosen-library/picture_collection/無職転生.jpg'),
 (5, '坂本龍馬：新しい日本を切り開いた幕末の志士', 'ながいのりあき', '小学館', 2009, '289.1', 0, 'http://localhost/kosen-library/picture_collection/坂本龍馬.jpg'),
 (6, '君の膵臓をたべたい', '住野よる', '双葉社', 2015, '913.6', 0, 'http://localhost/kosen-library/picture_collection/君の膵臓をたべたい.jpg'),
 (7, 'コンビニ人間', '村田紗耶香', '文藝春秋', 2016, '913.6', 0, 'http://localhost/kosen-library/picture_collection/コンビニ人間.jpg'),
@@ -95,7 +95,10 @@ INSERT INTO books (id, title, author, publisher, year, ndc, is_deleted, image_ur
 -- 3. articles データ
 INSERT INTO articles (id, user_id, book_id, title, content, is_deleted, created_at) VALUES
 (1, 1, 1, '文系にこそ読んでほしい一冊', '非常に読みやすかったです！数式がほとんど出てこないので、プログラミング経験がなくてもAIの全体像をイメージすることができました。最初の一冊として本当におすすめです。', 0, '2026-05-20 14:30:00'),
-(2, 2, 2, '実務に直結するテクニックが満載', '基本文法を学び終えた後に読むと、一気に実践力がつく素晴らしい内容でした。特にWebAPIとの連携部分の解説が丁寧で、すぐに自分の開発に活かせます。', 0, '2026-05-10 09:15:00');
+(2, 2, 2, '実務に直結するテクニックが満載', '基本文法を学び終えた後に読むと、一気に実践力がつく素晴らしい内容でした。特にWebAPIとの連携部分の解説が丁寧で、すぐに自分の開発に活かせます。', 0, '2026-05-10 09:15:00'),
+(3, 3, 3, '女子マネージャーのすばらしさ', '女子マネージャーで得られる経験がわかる。高校に入る前の小中学生の方に読んでいただきたい本である。', 0, '2026-07-15 09:15:00'),
+(4, 1, 4, '異世界に行きたい人へ', '異世界で本気を出したい人におすすめ。', 0, '2030-07-15 09:15:00'),
+(5, 2, 5, '坂本龍馬の一生が知りたい人へ', '坂本龍馬は、幕末の日本で活躍した志士です。薩摩藩と長州藩の仲介を行い、日本の新しい時代への道を開く大きな役割を果たしました。自由な発想と行動力を持ち、多くの人々を動かしたことから、現在でも幕末を代表する人物として親しまれています。', 0, '2027-07-15 09:15:00');
 
 -- 4. borrow_records データ（🌟 送信先テーブル名を変更）
 INSERT INTO borrow_records (id, user_id, book_id, loan_date, return_date) VALUES
