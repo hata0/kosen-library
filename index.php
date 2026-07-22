@@ -195,8 +195,8 @@ try {
             display: flex;
             overflow-x: auto;
             flex-wrap: nowrap;
-            gap: 8px;
-            padding: 0 0 12px 0;
+            gap: 12px;
+            margin: 0 20px;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
         }
